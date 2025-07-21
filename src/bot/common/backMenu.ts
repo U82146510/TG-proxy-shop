@@ -12,6 +12,13 @@ export function backToMainMenu(bot:Bot<Context>){
         await deleteCachedMessages(ctx,`isp_${telegramId}`);
         await deleteCachedMessages(ctx,`operator_${telegramId}`);
         await deleteCachedMessages(ctx,`period_${telegramId}`);
+        await deleteCachedMessages(ctx,`balance_added${telegramId}`);
+        await deleteCachedMessages(ctx,`order_list${telegramId}`);
+        await deleteCachedMessages(ctx,`no_orders${telegramId}`);
+        await deleteCachedMessages(ctx,`order_list${telegramId}`);
+        await deleteCachedMessages(ctx,`order_menu_back_${telegramId}`);
+        await deleteCachedMessages(ctx,`inssuficent_balance_${telegramId}`);
+        await deleteCachedMessages(ctx,`extend_${telegramId}`);
         const redisKey =`back_${telegramId}`;
         const msg = await ctx.reply('Main Menu:',{reply_markup:mainMenu()});
         redis.pushList(redisKey,[String(msg.message_id)]);

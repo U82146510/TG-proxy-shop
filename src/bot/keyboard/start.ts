@@ -1,13 +1,18 @@
 import { Bot, Context, InlineKeyboard } from 'grammy';
 import {redis} from '../utils/redis.ts';
+import {User} from '../../models/User.ts';
+
 export function registerMainMenu(bot:Bot<Context>){
     bot.command("start",async(ctx:Context)=>{
         const telegramId = ctx.from?.id;
-        const username = ctx.from?.username;
         const firstName = ctx.from?.first_name ?? 'Anonymous';
         if(!telegramId){
             return;
         }
+        const checkIfUserExists = await User.findOne({userId:telegramId});
+        if(!checkIfUserExists){
+            await User.create({userId:telegramId})
+        } 
         const redisKey = `start_menu_${telegramId}`;
         const msg = await ctx.reply(`Welcome ${firstName}`,{
             reply_markup:mainMenu()

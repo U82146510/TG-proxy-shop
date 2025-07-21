@@ -1,32 +1,19 @@
 import {Document,model,Schema} from "mongoose";
-
-interface IPack {
-        _id:string;
-        name:string;
-        eid:string;
-        period:{
-            duration:'1'|'7'|'14'|'30',
-            price:number,
-            _id:string;
-        }[]
-};
-
 interface IProduct extends Document{
-    Country:string;
-    ISP:IPack[];
+    country:string;
+    isp:string;
+    period:string;
+    price:string;
+    eid:string
 };
 
-const productPack = new Schema<IPack>({
-    name:{type:String,required:true},
-    period:[{
-        duration:{type:String,enum:['1','7','14','30'],required:true},
-        price:Number
-    }]
-},{_id:true});
+const producSchema = new Schema<IProduct>({
+    country:{type:String,required:true},
+    isp:{type:String,required:true},
+    period:{type:String,required:true},
+    price:{type:String,required:true},
+    eid:{type:String,required:true}
 
-const productSchema = new Schema<IProduct>({
-    Country:{type:String,unique:true,required:true},
-    ISP:[productPack]
 });
 
-export const Product = model<IProduct>("Product",productSchema);
+export const Product = model('Product',producSchema);

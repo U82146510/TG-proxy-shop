@@ -7,7 +7,7 @@ import {registerBuyProxyHandler} from './scene/buyProxy.ts';
 import {redis} from './utils/redis.ts';
 import {backToMainMenu} from './common/backMenu.ts';
 import {connect_db} from '../config/connectDB.ts';
-import {upload} from './upload_product.ts';
+import {orderHandler} from '../bot/scene/orders.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +30,8 @@ const start = async()=>{
         await redis.connect();
         registerBuyProxyHandler(bot);
         registerMainMenu(bot);
-        backToMainMenu(bot)
+        backToMainMenu(bot);
+        orderHandler(bot);
         await bot.start();
     } catch (error) {
         console.error(error);
