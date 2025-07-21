@@ -16,6 +16,7 @@ export function orderHandler(bot: Bot<Context>) {
             await deleteCachedMessages(ctx,`start_menu_${telegramId}`);
             await deleteCachedMessages(ctx, `back_${telegramId}`);
             await deleteCachedMessages(ctx,`extend_${telegramId}`);
+            await deleteCachedMessages(ctx,`order_deleted_already${telegramId}`);
 
             const orders = await Order.find({ userId: telegramId })
             if (orders.length===0) {
@@ -91,5 +92,29 @@ export function orderHandler(bot: Bot<Context>) {
         } catch (error) {
             console.error(error);
         }
-    })
+    });
+    bot.callbackQuery(/period_(.+)_(.+)/,async(ctx:Context)=>{
+        await ctx.answerCallbackQuery();
+        const telegramId = ctx.from?.id;
+        const [_,orderId,period] = ctx.match ?? [];
+        try {
+            const ifOrderExists = await Order.findById(orderId);
+            if(!ifOrderExists){
+                const keyboard = new InlineKeyboard().text('Back',`my_orders`).row();
+                const redisKey = `order_deleted_already${telegramId}`;
+                const msg = await ctx.reply('Order does not exists',{
+                    reply_markup:keyboard
+                });
+                await redis.pushList(redisKey,[String(msg.message_id)]);
+                return;
+            }
+            const updateOrder = await Order.findByIdAndUpdate({id:orderId},{
+                $set:{
+                    expireAt:
+                }
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    });
 }
