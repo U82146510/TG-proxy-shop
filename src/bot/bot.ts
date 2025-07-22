@@ -8,6 +8,7 @@ import {redis} from './utils/redis.ts';
 import {backToMainMenu} from './common/backMenu.ts';
 import {connect_db} from '../config/connectDB.ts';
 import {orderHandler} from '../bot/scene/orders.ts';
+import {registerBalanceMenu} from './scene/myBalance.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +33,7 @@ const start = async()=>{
         registerMainMenu(bot);
         backToMainMenu(bot);
         orderHandler(bot);
+        registerBalanceMenu(bot);
         await bot.start();
     } catch (error) {
         console.error(error);

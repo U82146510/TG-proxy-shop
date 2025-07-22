@@ -20,7 +20,7 @@ export function orderHandler(bot: Bot<Context>) {
             await deleteCachedMessages(ctx, `back_${telegramId}`);
             await deleteCachedMessages(ctx,`extend_${telegramId}`);
             await deleteCachedMessages(ctx,`order_deleted_already${telegramId}`);
-
+            await deleteCachedMessages(ctx,`order_extended_success_${telegramId}`);
             const orders = await Order.find({ userId: telegramId })
             if (orders.length===0) {
                 const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
@@ -102,6 +102,7 @@ export function orderHandler(bot: Bot<Context>) {
         const [_, orderId, period] = ctx.match ?? [];
 
         try {
+            await deleteCachedMessages(ctx,`extend_${telegramId}`);
             const order = await Order.findById(orderId);
             if (!order) {
                 const keyboard = new InlineKeyboard().text('Back', `my_orders`).row();
@@ -156,6 +157,7 @@ export function orderHandler(bot: Bot<Context>) {
             await order.save();
 
             const keyboard = new InlineKeyboard().text('📦 My Orders', 'my_orders').row();
+            keyboard.text('🏠 Main Menu', 'back_to_menu').row();
             const msg = await ctx.reply(`✅ Order extended by ${addedDays} day(s).\n🕒 New expiration: ${newExpireDate.toLocaleString()}`, {
                 reply_markup: keyboard
             });
