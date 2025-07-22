@@ -204,7 +204,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
                     balance:total
                 }
             });
-
+            //somwhere here i should add the product i got from the API
             const addOrder = await Order.create({
                 userId:telegramId,
                 country:'Moldova',
