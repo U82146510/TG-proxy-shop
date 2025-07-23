@@ -52,44 +52,71 @@ export function registerBalanceMenu(bot:Bot<Context>){
         const telegramId = ctx.from?.id;
         if (!telegramId) return;
         try {
+            await deleteCachedMessages(ctx,`user_balance${telegramId}`);
             const redisKey = `inpurt_balance${telegramId}`
             const msg = await ctx.reply('💰 Enter the amount of USDT you want to deposit:');
             await redis.pushList(redisKey,[String(msg.message_id)]);
-            bot.on('message:text',async(ctx2:Context)=>{
-                const input = ctx2.message?.text?.trim()
-                if(!input){
-                    return
-                }
-                const amount = parseFloat(input);
-                if(isNaN(amount) || amount<=0){
-                    await ctx2.reply('❌ User not found.');
-                    return;
-                }
-                const user = await User.findOne({userId:telegramId});
-                if(!user){
-                    await ctx2.reply('❌ User not found.');
-                    return;
-                }
-
-                if(!user.tronAddress||!user.tronPrivateKey){
-                    const wallet = await generateWallet();
-                    if(!wallet){
-                        await ctx2.reply('⚠️ Failed to generate wallet.');
-                        return;
-                    }
-                    user.tronAddress=wallet.address;
-                    user.tronPrivateKey=wallet.privateKey;
-                }
-                user.hasPendingDeposit=true;
-                user.expectedAmount=amount.toFixed(6);
-                await user.save();
-                await ctx2.reply(
-            `✅ Please send *${amount} USDT* to the following TRC20 address:\n\`\`\`${user.tronAddress}\`\`\`\n\nOnce received, your balance will be updated automatically.`,
-                { parse_mode: 'Markdown' }
-        );
-            })
+            await redis.set(`state:${telegramId}`, 'awaiting_deposit_amount');
+            
         } catch (error) {
             console.error(error)
         }
     })
-}
+
+
+    bot.on('message:text', async (ctx2: Context) => {
+        const telegramId = ctx2.from?.id;
+        if (!telegramId) return;
+
+        await deleteCachedMessages(ctx2, `inpurt_balance${telegramId}`);
+        const state = await redis.get(`state:${telegramId}`);
+        if (state !== 'awaiting_deposit_amount') return;
+
+        const input = ctx2.message?.text?.trim();
+        if (!input) {
+            return;
+        }
+
+        const amount = parseFloat(input);
+        if (isNaN(amount) || amount <= 0) {
+            await ctx2.reply('❌ User not found.');
+            return;
+        }
+
+        await deleteCachedMessages(ctx2, `inpurt_balance${telegramId}`);
+
+        const user = await User.findOne({ userId: telegramId });
+        if (!user) {
+            await ctx2.reply('❌ User not found.');
+            return;
+        }
+
+        if (!user.tronAddress || !user.tronPrivateKey) {
+            const wallet = await generateWallet();
+            if (!wallet) {
+                await ctx2.reply('⚠️ Failed to generate wallet.');
+                return;
+            }
+            user.tronAddress = wallet.address;
+            user.tronPrivateKey = wallet.privateKey;
+        }
+
+        // ADD expiration time here:
+        const expirationMinutes = 15;
+        user.hasPendingDeposit = true;
+        user.expectedAmount = amount.toFixed(6);
+        user.expectedAmountExpiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
+
+        await user.save();
+
+        const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
+        const redisKey1 = `generating_address${telegramId}`;
+        const msg1 = await ctx2.reply(
+            `✅ Please send *${amount} USDT* to the following TRC20 address:\n\`\`\`${user.tronAddress}\`\`\`\n\nOnce received, your balance will be updated automatically.`,
+            { reply_markup: keyboard, parse_mode: 'Markdown' }
+        );
+        await redis.pushList(redisKey1, [String(msg1.message_id)]);
+        await redis.delete(`state:${telegramId}`);
+    });
+
+};

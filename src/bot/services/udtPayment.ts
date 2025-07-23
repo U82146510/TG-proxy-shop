@@ -1,35 +1,72 @@
 import { TronWeb } from "tronweb";
 
 const tronWeb = new TronWeb({
-    fullHost:'https://api.trongrid.io'
-})
+  fullHost: 'https://api.trongrid.io',
+  headers: {
+    'TRON-PRO-API-KEY': 'f5a9a0dc-e8c7-40cd-a4dd-b71deca8f0f2',
+    'Content-Type': 'application/json'
+  },
+  eventServer: 'https://api.trongrid.io',
+  privateKey: ''
+});
 
-
-const usdtContract = '';
-
-interface tronWallet{
-    address:string;
-    privateKey:string;
+interface TronWallet {
+  address: string;
+  privateKey: string;
 }
 
-export async function generateWallet():Promise<tronWallet|undefined>{
-    try {
-        const account = await tronWeb.createAccount();
-        return {
-            address:account.address.base58,
-            privateKey:account.privateKey
-        }
-    } catch (error) {
-        console.error(error);
-    }
-};
-
-export async function getUSDTbalance(address:string):Promise<number|undefined>{
-    try {
-        const contract = await tronWeb.contract().at(usdtContract);
-        const balanceRaw = await contract.methods.balanceOf(address).call();
-        return Number(balanceRaw)/ 1e6;
-    } catch (error) {
-        console.error(error);
-    }
+export async function generateWallet(): Promise<TronWallet | undefined> {
+  try {
+    const account = await tronWeb.createAccount();
+    return {
+      address: account.address.base58,
+      privateKey: account.privateKey
+    };
+  } catch (error) {
+    console.error('Error generating wallet:', error instanceof Error ? error.message : error);
+    return undefined;
+  }
 }
+
+const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+
+export async function getUSDTbalance(address: string): Promise<number | undefined> {
+  try {
+    if (!tronWeb.isAddress(address)) {
+      console.error('Invalid TRON address:', address);
+      return undefined;
+    }
+
+    // WORKING METHOD: Use getAccount with contract_address parameter
+    const accountInfo = await tronWeb.trx.getAccount(address);
+    
+    if (accountInfo?.assetV2?.length) {
+      const usdtAsset = accountInfo.assetV2.find(
+        (asset: any) => asset.key === USDT_CONTRACT
+      );
+      if (usdtAsset) {
+        return Number(usdtAsset.value) / 1e6;
+      }
+    }
+    
+    return 0; // No USDT balance found
+  } catch (error) {
+    console.error('Error fetching USDT balance:', {
+      address: address,
+      error: error instanceof Error ? error.message : error
+    });
+    return undefined;
+  }
+}
+
+// Verify connection
+async function checkConnection() {
+  try {
+    const block = await tronWeb.trx.getCurrentBlock();
+    console.log('✅ TRON connection successful. Latest block:', block.block_header.raw_data.number);
+  } catch (error) {
+    console.error('TRON connection error:', error instanceof Error ? error.message : error);
+  }
+}
+
+checkConnection();

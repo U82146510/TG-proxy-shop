@@ -9,6 +9,7 @@ import {backToMainMenu} from './common/backMenu.ts';
 import {connect_db} from '../config/connectDB.ts';
 import {orderHandler} from '../bot/scene/orders.ts';
 import {registerBalanceMenu} from './scene/myBalance.ts';
+import {startDepositChecker} from './job/depositChecker.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,6 +35,7 @@ const start = async()=>{
         backToMainMenu(bot);
         orderHandler(bot);
         registerBalanceMenu(bot);
+        startDepositChecker(bot)
         await bot.start();
     } catch (error) {
         console.error(error);
