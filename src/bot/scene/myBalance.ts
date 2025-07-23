@@ -47,21 +47,33 @@ export function registerBalanceMenu(bot:Bot<Context>){
     });
     
 
-    bot.callbackQuery('add_balance',async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
-        const telegramId = ctx.from?.id;
-        if (!telegramId) return;
-        try {
-            await deleteCachedMessages(ctx,`user_balance${telegramId}`);
-            const redisKey = `inpurt_balance${telegramId}`
-            const msg = await ctx.reply('💰 Enter the amount of USDT you want to deposit:');
-            await redis.pushList(redisKey,[String(msg.message_id)]);
-            await redis.set(`state:${telegramId}`, 'awaiting_deposit_amount');
-            
-        } catch (error) {
-            console.error(error)
-        }
-    })
+bot.callbackQuery('add_balance', async (ctx: Context) => {
+    await ctx.answerCallbackQuery();
+    const telegramId = ctx.from?.id;
+    if (!telegramId) return;
+
+    try {
+        await deleteCachedMessages(ctx, `user_balance${telegramId}`);
+
+        const redisKey = `inpurt_balance${telegramId}`;
+        const msg = await ctx.reply(
+            '💰 *Enter the amount of USDT you want to deposit:*\n\n' +
+            '⚠️ *Important:* Only the *last generated deposit request* will be accepted.\n' +
+            'If you create a new one before paying the previous one, the earlier one will be ignored.\n\n' +
+            '✅ After sending the exact amount, please *wait for confirmation*.\n\n' +
+            '⏳ Deposit window is valid for 15 minutes.',
+            {
+                parse_mode: 'Markdown',
+            }
+        );
+
+        await redis.pushList(redisKey, [String(msg.message_id)]);
+        await redis.set(`state:${telegramId}`, 'awaiting_deposit_amount');
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 
 
     bot.on('message:text', async (ctx2: Context) => {
