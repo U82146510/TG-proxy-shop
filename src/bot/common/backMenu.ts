@@ -26,6 +26,7 @@ export function backToMainMenu(bot:Bot<Context>){
         await deleteCachedMessages(ctx,`deposit_confirm_${telegramId}`);
         await deleteCachedMessages(ctx,`deposit_expired_${telegramId}`);
         await deleteCachedMessages(ctx,`failed_to_generate${telegramId}`);
+        await deleteCachedMessages(ctx,`about_${telegramId}`);
         const redisKey =`back_${telegramId}`;
         const msg = await ctx.reply('Main Menu:',{reply_markup:mainMenu()});
         redis.pushList(redisKey,[String(msg.message_id)]);
