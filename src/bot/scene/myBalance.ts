@@ -94,14 +94,18 @@ export function registerBalanceMenu(bot:Bot<Context>){
         if (!user.tronAddress || !user.tronPrivateKey) {
             const wallet = await generateWallet();
             if (!wallet) {
-                await ctx2.reply('⚠️ Failed to generate wallet.');
+                const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
+                const msg =  await ctx2.reply('⚠️ Failed to generate wallet.',{
+                    reply_markup:keyboard
+                });
+                await redis.pushList(`failed_to_generate${telegramId}`,[String(msg.message_id)])
                 return;
             }
             user.tronAddress = wallet.address;
             user.tronPrivateKey = wallet.privateKey;
         }
 
-        // ADD expiration time here:
+ 
         const expirationMinutes = 15;
         user.hasPendingDeposit = true;
         user.expectedAmount = amount.toFixed(6);

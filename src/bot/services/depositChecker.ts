@@ -2,7 +2,7 @@ import { getUSDTbalance } from './udtPayment.ts';
 import { Decimal } from 'decimal.js';
 import { User } from '../../models/User.ts';
 import { Bot, Context } from 'grammy';
-
+import {redis} from '../utils/redis.ts';
 
 export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
     try {
@@ -10,7 +10,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
 
         const now = new Date();
 
-        // Find users with non-expired pending deposits
+
         const users = await User.find({
             hasPendingDeposit: true,
             expectedAmountExpiresAt: { $gt: now }
@@ -46,11 +46,12 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         await user.save();
 
                         // Notify user
-                        await bot.api.sendMessage(
+                       const sentMsg =  await bot.api.sendMessage(
                             user.userId,
                             `💰 Deposit of ${current.toFixed(6)} USDT received!\n` +
                                 `🆕 Balance: ${newBalance} USDT`
                         );
+                        await redis.pushList(`deposit_confirm_${user.userId}`,[String(sentMsg.message_id)])
                         console.log(`✅ Credited ${user.userId}`);
                     } else {
                         console.log(
@@ -63,7 +64,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
             }
         }
 
-        // Handle expired deposits: clear and notify users
+
         const expiredUsers = await User.find({
             hasPendingDeposit: true,
             expectedAmountExpiresAt: { $lte: now }
@@ -75,10 +76,11 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
             expiredUser.expectedAmountExpiresAt = undefined;
             await expiredUser.save();
 
-            await bot.api.sendMessage(
+            const expiredMSg = await bot.api.sendMessage(
                 expiredUser.userId,
                 '⚠️ Your deposit window expired. Please create a new deposit if you want to add balance.'
             );
+            await redis.pushList(`deposit_expired_${expiredUser.userId}`,[String(expiredMSg.message_id)]);
             console.log(`⌛ Cleared expired deposit for user ${expiredUser.userId}`);
         }
     } catch (error) {

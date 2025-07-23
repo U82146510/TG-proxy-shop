@@ -23,6 +23,9 @@ export function backToMainMenu(bot:Bot<Context>){
         await deleteCachedMessages(ctx,`order_extended_success_${telegramId}`);
         await deleteCachedMessages(ctx,`user_balance${telegramId}`);
         await deleteCachedMessages(ctx,`generating_address${telegramId}`);
+        await deleteCachedMessages(ctx,`deposit_confirm_${telegramId}`);
+        await deleteCachedMessages(ctx,`deposit_expired_${telegramId}`);
+        await deleteCachedMessages(ctx,`failed_to_generate${telegramId}`);
         const redisKey =`back_${telegramId}`;
         const msg = await ctx.reply('Main Menu:',{reply_markup:mainMenu()});
         redis.pushList(redisKey,[String(msg.message_id)]);

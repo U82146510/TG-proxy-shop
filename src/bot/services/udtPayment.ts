@@ -37,7 +37,6 @@ export async function getUSDTbalance(address: string): Promise<number | undefine
       return undefined;
     }
 
-    // WORKING METHOD: Use getAccount with contract_address parameter
     const accountInfo = await tronWeb.trx.getAccount(address);
     
     if (accountInfo?.assetV2?.length) {
