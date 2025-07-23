@@ -21,11 +21,11 @@ export function registerMainMenu(bot:Bot<Context>){
     });
 }
 
-export function mainMenu():InlineKeyboard{
+export function mainMenu(): InlineKeyboard {
     return new InlineKeyboard()
-            .text('Buy Proxy',"buy_proxy").row()
-            .text('My Balance','my_balance')
-            .text('Orders','my_orders').row()
-            .text('About','about').row()
-            .text('Contact US','contact').row()
+        .text('Buy Proxy', 'buy_proxy').row()
+        .text('My Balance', 'my_balance')
+        .text('Orders', 'my_orders').row()
+        .text('About', 'about').row()
+        .url('Contact Us', 'https://t.me/GlobalProxy_support').row(); 
 }
