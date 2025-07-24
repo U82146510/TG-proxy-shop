@@ -54,7 +54,7 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
 
     try {
         await deleteCachedMessages(ctx, `user_balance${telegramId}`);
-
+        const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
         const redisKey = `inpurt_balance${telegramId}`;
         const msg = await ctx.reply(
             '💰 *Enter the amount of USDT you want to deposit:*\n\n' +
@@ -63,7 +63,7 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
             '✅ After sending the exact amount, please *wait for confirmation*.\n\n' +
             '⏳ Deposit window is valid for 15 minutes.',
             {
-                parse_mode: 'Markdown',
+               reply_markup:keyboard, parse_mode: 'Markdown',
             }
         );
 
