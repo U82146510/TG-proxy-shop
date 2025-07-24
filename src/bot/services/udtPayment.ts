@@ -1,9 +1,22 @@
 import { TronWeb } from "tronweb";
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({path:path.resolve('../../.env')});
+
+const api = process.env.api_trcgrid;
+if(!api){
+  throw new Error('missing tronn GRID API');
+}
 
 const tronWeb = new TronWeb({
   fullHost: 'https://api.trongrid.io',
   headers: {
-    'TRON-PRO-API-KEY': '4203cdd5-03ac-41bc-8d50-f716231ab717',
+    'TRON-PRO-API-KEY': `${api}`,
     'Content-Type': 'application/json'
   },
   eventServer: 'https://api.trongrid.io',

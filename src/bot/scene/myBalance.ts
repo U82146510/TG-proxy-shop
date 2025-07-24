@@ -3,7 +3,7 @@ import {redis} from '../utils/redis.ts';
 import {deleteCachedMessages} from '../utils/cleanup.ts';
 import { User } from "../../models/User.ts";
 import { generateWallet } from "../services/udtPayment.ts";
-
+import bcrypt from "bcryptjs";
 
 export function registerBalanceMenu(bot:Bot<Context>){
     bot.callbackQuery('my_balance', async (ctx: Context) => {

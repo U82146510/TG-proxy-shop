@@ -34,7 +34,7 @@ export function backToMainMenu(bot: Bot<Context>) {
         await deleteCachedMessages(ctx, `help_menu${telegramId}`);
         await deleteCachedMessages(ctx, `inpurt_balance${telegramId}`);
 
-        // Localized embedded message
+       
         const msgRU = `Добро пожаловать в @GlobalProxyShop!
 Наш сервис предлагает одни из самых доступных 4G мобильных прокси и гибкие тарифы под любые задачи.
 ⚠️ Мы не предоставляем прокси под чёрные цели!
