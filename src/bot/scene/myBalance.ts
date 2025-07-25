@@ -3,7 +3,19 @@ import {redis} from '../utils/redis.ts';
 import {deleteCachedMessages} from '../utils/cleanup.ts';
 import { User } from "../../models/User.ts";
 import { generateWallet } from "../services/udtPayment.ts";
-import bcrypt from "bcryptjs";
+import crypto from 'crypto';
+import dotnev from 'dotenv';
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotnev.config({
+    path:path.resolve(__dirname,'../../../.env')
+});
+
+
 
 export function registerBalanceMenu(bot:Bot<Context>){
     bot.callbackQuery('my_balance', async (ctx: Context) => {
@@ -113,8 +125,19 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
                 await redis.pushList(`failed_to_generate${telegramId}`,[String(msg.message_id)])
                 return;
             }
+
+            const secretKey = process.env.encryptionKey;
+            if(!secretKey){
+                throw new Error('missing encryption key');
+            }
+            const algorithm = 'aes-256-cbc';
+            const iv = crypto.randomBytes(16);
+            const cipher = crypto.createCipheriv(algorithm,Buffer.from(secretKey),iv);
+            let encrypted = cipher.update(wallet.privateKey,'utf8','hex');
+            encrypted+=cipher.final('hex');
+            const final = iv.toString('hex')+ ":" +encrypted;
             user.tronAddress = wallet.address;
-            user.tronPrivateKey = wallet.privateKey;
+            user.tronPrivateKey = final;
         }
 
  
