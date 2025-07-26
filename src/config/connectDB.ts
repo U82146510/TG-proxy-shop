@@ -3,6 +3,7 @@ import dotnev from 'dotenv';
 import { fileURLToPath } from "url";
 import path from "path";
 import { error} from "console";
+import {seedAdmin} from '../bot/utils/seeds.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +34,7 @@ export const connect_db = async()=>{
             bufferCommands:false,
             waitQueueTimeoutMS:10000,
         });
+        await seedAdmin();
     } catch (error) {
         console.error(error);
         process.exit(1);
