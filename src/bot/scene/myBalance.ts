@@ -11,11 +11,11 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotnev.config({
-    path:path.resolve(__dirname,'../../../.env')
-});
-
-
+const envPath = path.resolve(__dirname,'../../../.env');
+const envResult = dotnev.config({path:envPath});
+if(envResult.error){
+    throw new Error('missing key encription')
+}
 
 export function registerBalanceMenu(bot:Bot<Context>){
     bot.callbackQuery('my_balance', async (ctx: Context) => {
@@ -130,14 +130,24 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
             if(!secretKey){
                 throw new Error('missing encryption key');
             }
-            const algorithm = 'aes-256-cbc';
-            const iv = crypto.randomBytes(16);
-            const cipher = crypto.createCipheriv(algorithm,Buffer.from(secretKey),iv);
-            let encrypted = cipher.update(wallet.privateKey,'utf8','hex');
-            encrypted+=cipher.final('hex');
-            const final = iv.toString('hex')+ ":" +encrypted;
-            user.tronAddress = wallet.address;
-            user.tronPrivateKey = final;
+            try {
+                const keyBuffer = Buffer.from(secretKey,'hex');
+                if(keyBuffer.length!==32){
+                    throw new Error('Encryption key must be 32 bytes (64 hex characters)');
+                }
+                const algorithm = 'aes-256-cbc';
+                const iv = crypto.randomBytes(16);
+                const cipher = crypto.createCipheriv(algorithm,keyBuffer,iv);
+                let encrypted = cipher.update(wallet.privateKey,'utf8','hex');
+                encrypted+=cipher.final('hex');
+
+                user.tronAddress = wallet.address;
+                user.tronPrivateKey = `${iv.toString('hex')}:${encrypted}`;
+                } 
+                catch (error) {
+                    console.error(error)
+                }
+      
         }
 
  
