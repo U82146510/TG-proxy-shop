@@ -6,12 +6,12 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
-import { strict } from "assert";
+import {loginRouter} from './routes/loginRoute.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({path:path.resolve('../../.env')});
+dotenv.config({path:path.resolve(__dirname,'../../.env')});
 const connect_db = process.env.atlas;
 if(!connect_db){
     throw new Error('missing atlas connection in the app.ts');
@@ -59,6 +59,8 @@ app.use(
         }
     })
 );
+
+app.use('/auth',loginRouter)
 
 export const startAdminPanel = async()=>{
     try {
