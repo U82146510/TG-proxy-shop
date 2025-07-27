@@ -1,7 +1,9 @@
-import {Document,model,Schema} from "mongoose";
+import {Document,model,Schema,Types} from "mongoose";
 import bcrypt from "bcryptjs";
 
-interface IAuth extends Document{
+
+export interface IAuth extends Document{
+    _id:Types.ObjectId;
     username:string;
     password:string;
     comparePassword(candidatePassword:string):Promise<boolean>
@@ -47,7 +49,6 @@ authSchema.methods.comparePassword = async function (candidatePassword:string):P
         if(!this.password) return false;
         return bcrypt.compare(candidatePassword,this.password as string)
     } catch (error) {
-        bcrypt.compare(candidatePassword,this.password)
         return false;
     }
 }

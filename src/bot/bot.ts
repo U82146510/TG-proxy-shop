@@ -12,6 +12,7 @@ import {registerBalanceMenu} from './scene/myBalance.ts';
 import {startDepositChecker} from './job/depositChecker.ts';
 import {registerAboutMenu} from './scene/aboutMenu.ts';
 import {helpMenu} from './scene/helpMenu.ts';
+import {startAdminPanel} from '../adminPanel/app.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +33,7 @@ const start = async()=>{
     try {
         await connect_db();
         await redis.connect();
+        await startAdminPanel()
         registerBuyProxyHandler(bot);
         registerMainMenu(bot);
         backToMainMenu(bot);
