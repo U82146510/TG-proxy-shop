@@ -32,6 +32,6 @@ export const update = async(req:Request,res:Response,next:NextFunction)=>{
 
         res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
-        res.status(500).json({error:'error at update route'});
+        next(error)
     }
 };

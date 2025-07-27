@@ -25,7 +25,7 @@ export const createProduct = async (req:Request,res:Response,next:NextFunction)=
         });
         res.status(201).json({message:`Pruduct ${createProduct.country} created`})
     } catch (error) {
-        res.status(500).json({error:'error at create route'});
+        next(error)
     }
 };
 
@@ -45,7 +45,7 @@ export const deleteProduct = async (req:Request,res:Response,next:NextFunction)=
         }
         res.status(200).json({message:`Product ${deleteProduct?.country} deleted`});
     } catch (error) {
-        res.status(500).json({error:'error at delete route'});
+        next(error)
     }
 };
 
@@ -74,6 +74,6 @@ export const updateProduct = async(req:Request,res:Response,next:NextFunction)=>
 
         res.status(200).json({message:`Product ${updateProduct.country} updated`})
     } catch (error) {
-        res.status(500).json({error:'error at update route'});
+        next(error)
     }
 };

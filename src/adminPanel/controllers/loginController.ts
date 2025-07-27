@@ -38,6 +38,6 @@ export const login = async(req:Request,res:Response,next:NextFunction)=>{
         req.session.userId = user._id.toString()
         res.status(200).json({message:'successfully logged in'});
     } catch (error) {
-        res.status(500).json({error:'error at login route'});
+        next(error)
     }
 };

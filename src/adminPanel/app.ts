@@ -1,4 +1,4 @@
-import express,{ type Application } from "express";
+import express,{ type Application,type Request,type Response,type NextFunction } from "express";
 import session from 'express-session';
 import rateLimit from 'express-rate-limit';
 import MongoStore from 'connect-mongo'
@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import {loginRouter} from './routes/loginRoute.ts';
 import { updateRouter } from "./routes/updatePasswordRoute.ts";
 import {productRouter} from './routes/productRoute.ts';
+import {userRouter} from './routes/userRoute.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +66,14 @@ app.use(
 app.use('/auth',loginRouter);
 app.use('/auth',updateRouter);
 app.use('/admin',productRouter);
+app.use('/admin',userRouter)
+
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong on the server.' });
+});
+
 
 export const startAdminPanel = async()=>{
     try {

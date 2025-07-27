@@ -8,13 +8,13 @@ const schemaUser = z.object({
 
 export const users = async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        const allUsers = await User.find();
-        if(allUsers.length===0 || !allUsers){
-            res.status(403).json({message:'Not found'});
+        const allUsers = await User.find().select('userId balance ');
+        if(allUsers.length===0){
+            res.status(404).json({message:'Not found'});
         }
         res.status(200).json({message:allUsers});
     } catch (error) {
-        res.status(500).json({error:'error at order route'});
+        next(error)
     }
 };
 
@@ -28,18 +28,18 @@ export const user = async(req:Request,res:Response,next:NextFunction)=>{
         const {userId} = parsed.data;
         const user = await User.findOne({userId:userId}).populate('Order');
         if(!user){
-            res.status(403).json({message:'Not found'});
+            res.status(404).json({message:'Not found'});
             return;
         }
-        res.status(200).json({messae:user});
+        res.status(200).json({message:user});
     } catch (error) {
-        res.status(500).json({error:'error at order route'});
+        next(error)
     }
 };
 
 const schemaUserUpdate = z.object({
     userId:z.string(),
-    balance:z.number()
+    balance:z.string()
 });
 
 export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
@@ -59,8 +59,8 @@ export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
             res.status(403).json({message:'Not found'});
             return;
         }
-        res.status(200).json({messae:`Balance ${balance} for ${userId} was update`});
+        res.status(200).json({message:`Balance ${balance} for ${userId} was update`});
     } catch (error) {
-        res.status(500).json({error:'error at order route'});
+        next(error)
     }
 };
