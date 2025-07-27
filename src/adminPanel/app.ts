@@ -17,6 +17,11 @@ if(!connect_db){
     throw new Error('missing atlas connection in the app.ts');
 }
 
+const secretKey = process.env.encryptionKey;
+if(!secretKey){
+    throw new Error('missing secret key ');
+}
+
 const app:Application = express();
 const port:3000=3000;
 
@@ -39,7 +44,7 @@ app.use(limiter);
 app.use(
     session({
         name:'admin.sid',
-        secret:'1111111testUpdateLaterOn',
+        secret:secretKey,
         resave:false,
         saveUninitialized:false,
         store:MongoStore.create({
