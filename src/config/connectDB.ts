@@ -3,6 +3,7 @@ import dotnev from 'dotenv';
 import { fileURLToPath } from "url";
 import path from "path";
 import { error} from "console";
+import {creteAdmin} from '../bot/utils/seed.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +34,7 @@ export const connect_db = async()=>{
             bufferCommands:false,
             waitQueueTimeoutMS:10000,
         });
+      
     } catch (error) {
         console.error(error);
         process.exit(1);
@@ -43,8 +45,9 @@ const db:mongoose.Connection=mongoose.connection;
 db.on('error',()=>{
     console.error(error)
 })
-.on('connected',()=>{
+.on('connected',async()=>{
     console.info('db connected');
+    await creteAdmin()
 })
 .on('disconnected',()=>{
     console.info('db disconnected');
