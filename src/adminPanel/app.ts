@@ -7,6 +7,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 import {loginRouter} from './routes/loginRoute.ts';
+import { updateRouter } from "./routes/updatePasswordRoute.ts";
+import {productRouter} from './routes/productRoute.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,7 +62,9 @@ app.use(
     })
 );
 
-app.use('/auth',loginRouter)
+app.use('/auth',loginRouter);
+app.use('/auth',updateRouter);
+app.use('/admin',productRouter);
 
 export const startAdminPanel = async()=>{
     try {
