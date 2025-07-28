@@ -6,7 +6,8 @@ const schemaProduct = z.object({
     country:z.string(),
     isp:z.string(),
     period:z.string(),
-    price:z.number(),
+    price:z.coerce.number(),
+    eid:z.string()
 })
 
 export const createProduct = async (req:Request,res:Response,next:NextFunction)=>{
@@ -16,12 +17,13 @@ export const createProduct = async (req:Request,res:Response,next:NextFunction)=
             res.status(400).json({error:'Wrong input'});
             return;
         }
-        const {country,isp,period,price} = parsed.data;
+        const {country,isp,period,price,eid} = parsed.data;
         const createProduct = await Product.create({
             country:country,
             isp:isp,
             period:period,
-            price:price
+            price:price,
+            eid:eid
         });
         res.status(201).json({message:`Pruduct ${createProduct.country} created`})
     } catch (error) {
@@ -38,8 +40,8 @@ export const deleteProduct = async (req:Request,res:Response,next:NextFunction)=
             res.status(400).json({error:'Wrong input'});
             return;
         }
-        const {country,isp,period,price} = parsed.data;
-        const deleteProduct = await Product.findOneAndDelete({country,isp,period,price});
+        const {country,isp,period,price,eid} = parsed.data;
+        const deleteProduct = await Product.findOneAndDelete({country,isp,period,price,eid});
         if (!deleteProduct) {
              return res.status(404).json({ error: 'Product not found' });
         }
@@ -58,11 +60,12 @@ export const updateProduct = async(req:Request,res:Response,next:NextFunction)=>
             res.status(400).json({error:'Wrong input'});
             return;
         }
-        const {country,isp,period,price} = parsed.data;
+        const {country,isp,period,price,eid} = parsed.data;
         const updateProduct = await Product.findOneAndUpdate({
             country:country,
             isp:isp,
-            period
+            period:period,
+            eid:eid
         },{
             $set:{
                 price:price

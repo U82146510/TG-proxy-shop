@@ -26,7 +26,7 @@ export const user = async(req:Request,res:Response,next:NextFunction)=>{
             return;
         }
         const {userId} = parsed.data;
-        const user = await User.findOne({userId:userId}).populate('Order');
+        const user = await User.findOne({userId:userId}).populate('orders');
         if(!user){
             res.status(404).json({message:'Not found'});
             return;

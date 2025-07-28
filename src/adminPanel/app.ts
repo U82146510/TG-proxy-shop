@@ -10,6 +10,7 @@ import {loginRouter} from './routes/loginRoute.ts';
 import { updateRouter } from "./routes/updatePasswordRoute.ts";
 import {productRouter} from './routes/productRoute.ts';
 import {userRouter} from './routes/userRoute.ts';
+import {protectRoute} from './middleware/protectRoute.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +63,9 @@ app.use(
         }
     })
 );
+
+app.use('/admin',protectRoute,express.static(path.join(__dirname,'../../','public/admin')));
+app.use(express.static(path.join(__dirname,'../../',"public")))
 
 app.use('/auth',loginRouter);
 app.use('/auth',updateRouter);
