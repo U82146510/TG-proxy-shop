@@ -13,6 +13,7 @@ import {startDepositChecker} from './job/depositChecker.ts';
 import {registerAboutMenu} from './scene/aboutMenu.ts';
 import {helpMenu} from './scene/helpMenu.ts';
 import {startAdminPanel} from '../adminPanel/app.ts';
+import {resetBalanceEveryMonth} from '../adminPanel/utils/resetMontlyBalance.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,6 +43,7 @@ const start = async()=>{
         registerAboutMenu(bot);
         startDepositChecker(bot);
         helpMenu(bot);
+        resetBalanceEveryMonth();
         await bot.start();
     } catch (error) {
         console.error(error);

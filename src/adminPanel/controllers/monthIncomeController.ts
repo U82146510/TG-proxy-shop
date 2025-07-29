@@ -8,7 +8,7 @@ export const incomeStatistics = async(req:Request,res:Response,next:NextFunction
             res.status(404).json({error:'Balance record not found'})
             return;
         }
-        const {Month} = moneyStatistics;
+        const {Month,Total,shop} = moneyStatistics;
         console.log(Month)
     } catch (error) {
         next(error)
