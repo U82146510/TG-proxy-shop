@@ -9,7 +9,7 @@ export const incomeStatistics = async(req:Request,res:Response,next:NextFunction
             return;
         }
         const {Month,Total,shop} = moneyStatistics;
-        console.log(Month)
+        res.status(200).json({Month,Total,shop})
     } catch (error) {
         next(error)
     }
