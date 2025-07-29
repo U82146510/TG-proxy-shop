@@ -11,6 +11,7 @@ import { updateRouter } from "./routes/updatePasswordRoute.ts";
 import {productRouter} from './routes/productRoute.ts';
 import {userRouter} from './routes/userRoute.ts';
 import {protectRoute} from './middleware/protectRoute.ts';
+import {incomeStatistic} from './routes/monthIncomeRoute.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,7 +71,8 @@ app.use(express.static(path.join(__dirname,'../../',"public")))
 app.use('/auth',loginRouter);
 app.use('/auth',updateRouter);
 app.use('/admin',productRouter);
-app.use('/admin',userRouter)
+app.use('/admin',userRouter);
+app.use('/admin',incomeStatistic);
 
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
