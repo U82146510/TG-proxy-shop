@@ -3,6 +3,7 @@ import { Decimal } from 'decimal.js';
 import { User } from '../../models/User.ts';
 import { Bot, Context } from 'grammy';
 import {redis} from '../utils/redis.ts';
+import {shopBalance} from '../../models/shopBalance.ts'
 
 export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
     try {
@@ -44,6 +45,33 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         user.expectedAmount = '';
                         user.expectedAmountExpiresAt = undefined;
                         await user.save();
+
+
+                        const shopTotalbalance = await shopBalance.findOne({key:'shop-status'});
+                        if(!shopTotalbalance){
+                            return;
+                        }
+                        const {Month,Total,shop} = shopTotalbalance;
+                        const monthIncome = new Decimal(Month);
+                        const totalIncome = new Decimal(Total);
+                        const shopCommision = new Decimal(shop);
+
+                        const finalMonthIncome = monthIncome.plus(current);
+                        const finalTotalIncome = totalIncome.plus(current);
+                        const commision = new Decimal(current).mul(0.1);
+                        const finalShopCommision = shopCommision.plus(commision);
+
+                        await shopBalance.findOneAndUpdate(
+                            { key: 'shop-status' },
+                            {
+                                $inc: {
+                                Month: current.toNumber(),
+                                Total: current.toNumber(),
+                                shop: current.mul(0.1).toNumber()
+                                }
+                            },
+                            { new: true, upsert: true }
+                            );
 
                         // Notify user
                        const sentMsg =  await bot.api.sendMessage(
