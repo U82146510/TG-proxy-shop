@@ -4,6 +4,6 @@ import {protectRoute} from '../middleware/protectRoute.ts';
 
 export const productRouter:Router = Router();
 
-productRouter.post('/product',protectRoute,createProduct);
-productRouter.delete('/product',protectRoute,deleteProduct);
-productRouter.patch('/product',protectRoute,updateProduct);
+productRouter.post('/product',createProduct);
+productRouter.delete('/product',deleteProduct);
+productRouter.patch('/product',updateProduct);

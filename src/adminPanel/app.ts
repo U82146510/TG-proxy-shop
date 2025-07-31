@@ -65,8 +65,10 @@ app.use(
     })
 );
 
-app.use('/admin',protectRoute,express.static(path.join(__dirname,'../../','public/admin')));
 app.use(express.static(path.join(__dirname,'../../',"public")))
+
+app.set('view engine','ejs');
+app.set('views',path.join(__dirname,'../../','views'));
 
 app.use('/auth',loginRouter);
 app.use('/auth',updateRouter);

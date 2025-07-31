@@ -14,29 +14,39 @@ const userSchema  = z.object({
     .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
 });
 
+export const showLoginForm = (req: Request, res: Response,next:NextFunction) => {
+    res.render('index', { error: null });
+};
+
 export const login = async(req:Request,res:Response,next:NextFunction)=>{
     const parsed = userSchema.safeParse(req.body);
     try {
         if(!parsed.success){
-            res.status(400).json({error:'Wrong input'});
+            res.status(400).render('index',{
+                error:'Invalid input format'
+            });
             return;
         }
         const {username,password,} = parsed.data;
         const user = await Auth.findOne({username:username}).select('+password') as IAuth | null;;
 
         if(!user || !(user instanceof Auth)){
-            res.status(404).json({message:'There no such a user'});
+            res.status(404).render('index',{
+                error:'User not found'
+            });
             return;
         }
         const isMatchPassword = await user.comparePassword(password);
         if(!isMatchPassword){
             await bcrypt.compare(password, DUMMY_HASH);
-            res.status(401).json({message:'Incorrect password'});
+            res.status(401).render('index',{
+                error:'Incorrect password'
+            });
             return;
         }
 
         req.session.userId = user._id.toString()
-        res.status(200).json({message:'successfully logged in'});
+        res.redirect('/admin/users');
     } catch (error) {
         next(error)
     }

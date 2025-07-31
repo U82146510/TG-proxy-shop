@@ -5,6 +5,6 @@ import {protectRoute} from '../middleware/protectRoute.ts';
 
 export const userRouter:Router = Router();
 
-userRouter.get('/users',protectRoute,users);
-userRouter.post('/user',protectRoute,user);
-userRouter.patch('/user',protectRoute,updateUser);
+userRouter.get('/users',users);
+userRouter.post('/user',user);
+userRouter.patch('/user',updateUser);

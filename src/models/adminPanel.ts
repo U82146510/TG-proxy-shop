@@ -35,7 +35,7 @@ const authSchema = new Schema<IAuth>({
 authSchema.pre('save',async function(next){
     if(!this.isModified('password')) return next();
     try {
-        const genSalt = await bcrypt.genSalt(20);
+        const genSalt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(this.password,genSalt);
         this.password = hashPassword;
         next();

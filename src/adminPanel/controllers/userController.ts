@@ -12,7 +12,7 @@ export const users = async(req:Request,res:Response,next:NextFunction)=>{
         if(allUsers.length===0){
             res.status(404).json({message:'Not found'});
         }
-        res.status(200).json({message:allUsers});
+        res.render('dashboard',{users:allUsers})
     } catch (error) {
         next(error)
     }
