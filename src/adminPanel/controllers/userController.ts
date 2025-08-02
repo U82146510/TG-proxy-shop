@@ -66,7 +66,10 @@ export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
     const parsed = schemaUserUpdate.safeParse(req.body);
     try {
         if(!parsed.success){
-            res.status(400).json({error:'Wrong input'});
+            res.render('update',{
+                message:null,
+                error:'Wrong input'
+            })
             return;
         }
         const {userId,balance} = parsed.data;
@@ -76,10 +79,16 @@ export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
             }
         },{new:true});
         if(!userUpdate){
-            res.status(403).json({message:'Not found'});
+            res.render('update',{
+                message:'Not found',
+                error:null
+            })
             return;
         }
-        res.status(200).json({message:`Balance ${balance} for ${userId} was update`});
+        res.render('update',{
+            message:`Balance ${balance} for ${userId} was update`,
+            error:null
+        })
     } catch (error) {
         next(error)
     }
