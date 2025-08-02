@@ -22,16 +22,23 @@ export const user = async(req:Request,res:Response,next:NextFunction)=>{
     const parsed = schemaUser.safeParse(req.body);
     try {
         if(!parsed.success){
-            res.status(400).json({error:'Wrong input'});
-            return;
+            res.render('user',{
+                error:'Not found'
+            });
+            return
         }
         const {userId} = parsed.data;
         const user = await User.findOne({userId:userId}).populate('orders');
         if(!user){
-            res.status(404).json({message:'Not found'});
+            res.render('user',{
+                error:'User not found',
+                user:null
+            })
             return;
         }
-        res.status(200).json({message:user});
+        res.render('user',{
+            user:user
+        });
     } catch (error) {
         next(error)
     }

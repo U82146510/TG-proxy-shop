@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="/admin/user.css">
+</head>
+<body>
+    <div class="user-container">
+        <h2>User Info</h2>
+        <form action="/admin/user" method="post">
+            <input type="text" name="userId" placeholder="User ID" required>
+            <button type="submit">Fetch User</button>
+        </form>
+        <%if(user){%>
+            <div class="user-details">
+                <p><strong>User ID:</strong> <%= user.userId %></p>
+                <p><strong>Balance:</strong> <%= user.balance %></p>
+            </div>
+        <%}%>
+        <%if(error){%>
+            <p class="error"><%= error %></p>
+        <%}%>
+    </div>
+</body>
+</html>
