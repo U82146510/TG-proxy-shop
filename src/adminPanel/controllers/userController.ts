@@ -62,6 +62,17 @@ const schemaUserUpdate = z.object({
     balance:z.string()
 });
 
+export const updateUserGet = async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        res.render('update',{
+            message:null,
+            error:null
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
     const parsed = schemaUserUpdate.safeParse(req.body);
     try {
