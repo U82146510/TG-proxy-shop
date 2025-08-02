@@ -18,10 +18,34 @@
                 <p><strong>User ID:</strong> <%= user.userId %></p>
                 <p><strong>Balance:</strong> <%= user.balance %></p>
             </div>
+
+
+            <%if(user.orders && user.orders.length){%>
+                 <div class="order-list">
+                    <h3>Orders</h3>
+                    <ul>
+                        <%user.orders.forEach(order=>{%>
+                            <li>
+                                <strong>Order #:</strong> <%= order._id %><br>
+                                <strong>Product:</strong> <%= order.country %><br>
+                                <strong>Amount:</strong> <%= order.isp %><br>
+                                <strong>Price:</strong> <%= order.price %><br>
+                                <strong>Period:</strong> <%= order.period %><br>
+                                <strong>Expire:</strong> <%= order.expireAt %><br>
+                                <strong>Eid:</strong> <%= order.eid %><br>
+                            </li>
+                        <%})%>
+                    </ul>
+                </div>
+            <%}else{%>
+                <p>No orders found for this user.</p>
+            <%}%>
         <%}%>
         <%if(error){%>
             <p class="error"><%= error %></p>
         <%}%>
+
+        
     </div>
 </body>
 </html>

@@ -18,11 +18,23 @@ export const users = async(req:Request,res:Response,next:NextFunction)=>{
     }
 };
 
+
+export const userGet = async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        res.render('user',{
+            error:null,user:null
+        });
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const user = async(req:Request,res:Response,next:NextFunction)=>{
     const parsed = schemaUser.safeParse(req.body);
     try {
         if(!parsed.success){
             res.render('user',{
+                user:null,
                 error:'Not found'
             });
             return
@@ -37,7 +49,8 @@ export const user = async(req:Request,res:Response,next:NextFunction)=>{
             return;
         }
         res.render('user',{
-            user:user
+            user:user,
+            error:null
         });
     } catch (error) {
         next(error)
