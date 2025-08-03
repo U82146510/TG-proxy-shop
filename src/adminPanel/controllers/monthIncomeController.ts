@@ -5,11 +5,21 @@ export const incomeStatistics = async(req:Request,res:Response,next:NextFunction
     try {
         const moneyStatistics = await shopBalance.findOne({key:'shop-status'});
         if(!moneyStatistics){
-            res.status(404).json({error:'Balance record not found'})
+            res.render('statistics',{
+                Month:null,
+                Total:null,
+                shop:null,
+                error:'Balance record not found'
+            })
             return;
         }
         const {Month,Total,shop} = moneyStatistics;
-        res.status(200).json({Month,Total,shop})
+        res.render('statistics',{
+            Month,
+            Total,
+            shop,
+            error:null
+        })
     } catch (error) {
         next(error)
     }

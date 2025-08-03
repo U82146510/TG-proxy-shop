@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Statistics</title>
+    <link rel="stylesheet" href="/admin/statistics.css" />
+</head>
+<body>
+
+    <div class="statistics-container">
+        <h2>Monthly Income Statistics</h2>
+        <%if(error){%>
+             <p class="error"><%= error %></p>
+        <%}else{%>
+            <div class="stat-box"> 
+                <p><strong>Month:</strong><%= Month %></p>
+                <p><strong>Total:</strong><%= Total %></p>
+                <p><strong>Shop Name:</strong><%= shop %></p>
+            </div>
+        <%}%>
+        
+    </div>
+
+</body>
+</html>
