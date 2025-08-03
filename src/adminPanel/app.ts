@@ -10,8 +10,9 @@ import {loginRouter} from './routes/loginRoute.ts';
 import { updateRouter } from "./routes/updatePasswordRoute.ts";
 import {productRouter} from './routes/productRoute.ts';
 import {userRouter} from './routes/userRoute.ts';
-import {protectRoute} from './middleware/protectRoute.ts';
 import {incomeStatistic} from './routes/monthIncomeRoute.ts';
+import methodOverride from 'method-override';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,6 +70,8 @@ app.use(express.static(path.join(__dirname,'../../',"public")))
 
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'../../','views'));
+app.use(methodOverride('_method'));
+
 
 app.use('/auth',loginRouter);
 app.use('/auth',updateRouter);

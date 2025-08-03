@@ -24,6 +24,7 @@
     "express-session": "^1.18.2",
     "grammy": "^1.37.0",
     "helmet": "^8.1.0",
+    "method-override": "^3.0.0",
     "mongoose": "^8.16.2",
     "node-cron": "^4.2.1",
     "redis": "^5.6.0",
@@ -33,6 +34,7 @@
     "zod": "^4.0.10"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3"
+    "@types/express": "^5.0.3",
+    "@types/method-override": "^3.0.0"
   }
 }
