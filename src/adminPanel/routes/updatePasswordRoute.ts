@@ -1,7 +1,8 @@
 import { Router } from "express";
-import {update} from '../controllers/updatePasswordController.ts';
+import {update,updateGet} from '../controllers/updatePasswordController.ts';
 import {protectRoute} from '../middleware/protectRoute.ts';
 
 export const updateRouter:Router = Router();
 
-updateRouter.post('/update',protectRoute,update);
+updateRouter.get('/update',updateGet);
+updateRouter.post('/update',update);
