@@ -12,7 +12,7 @@ import {productRouter} from './routes/productRoute.ts';
 import {userRouter} from './routes/userRoute.ts';
 import {incomeStatistic} from './routes/monthIncomeRoute.ts';
 import methodOverride from 'method-override';
-
+import {logoutRoute} from './routes/logoutRoute.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,6 +78,7 @@ app.use('/admin',updateRouter);
 app.use('/admin',productRouter);
 app.use('/admin',userRouter);
 app.use('/admin',incomeStatistic);
+app.use('/admin',logoutRoute);
 
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
