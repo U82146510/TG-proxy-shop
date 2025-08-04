@@ -38,7 +38,7 @@ body{
 .update-container button{
     padding: 0.75rem;
     border: none;
-    background-color: #28a745;
+    background-color:#007bff;;
     color: white;
     font-weight: bold;
     border-radius: 6px;
@@ -60,4 +60,32 @@ body{
   margin-top: 1rem;
   color: red;
   font-weight: bold;
+}
+
+
+.nav {
+    background-color: #333;
+    padding: 0.75rem;
+}
+
+.nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.nav a:hover {
+    background-color: #555;
 }

@@ -64,7 +64,7 @@ const schemaUserUpdate = z.object({
 
 export const updateUserGet = async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        res.render('update',{
+        res.render('userupdate',{
             message:null,
             error:null
         })
@@ -77,7 +77,7 @@ export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
     const parsed = schemaUserUpdate.safeParse(req.body);
     try {
         if(!parsed.success){
-            res.render('update',{
+            res.render('userupdate',{
                 message:null,
                 error:'Wrong input'
             })
@@ -90,13 +90,13 @@ export const updateUser =  async(req:Request,res:Response,next:NextFunction)=>{
             }
         },{new:true});
         if(!userUpdate){
-            res.render('update',{
+            res.render('userupdate',{
                 message:'Not found',
                 error:null
             })
             return;
         }
-        res.render('update',{
+        res.render('userupdate',{
             message:`Balance ${balance} for ${userId} was update`,
             error:null
         })

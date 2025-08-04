@@ -74,7 +74,7 @@ app.use(methodOverride('_method'));
 
 
 app.use('/auth',loginRouter);
-app.use('/auth',updateRouter);
+app.use('/admin',updateRouter);
 app.use('/admin',productRouter);
 app.use('/admin',userRouter);
 app.use('/admin',incomeStatistic);
