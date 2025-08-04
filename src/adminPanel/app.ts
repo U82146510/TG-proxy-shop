@@ -86,6 +86,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({ message: 'Something went wrong on the server.' });
 });
 
+app.use((req:Request,res:Response,next:NextFunction)=>{
+    res.status(404).json({ message: `Route ${req.originalUrl} not found.` });
+});
 
 export const startAdminPanel = async()=>{
     try {
