@@ -10,5 +10,5 @@ userRouter.get('/users',users);
 userRouter.post('/user',user);
 userRouter.get('/user',userGet);
 
-userRouter.get('/userupdate',updateUserGet)
-userRouter.patch('/userupdate',updateUser);
+userRouter.get('/userupdate',protectRoute,updateUserGet)
+userRouter.patch('/userupdate',protectRoute,updateUser);

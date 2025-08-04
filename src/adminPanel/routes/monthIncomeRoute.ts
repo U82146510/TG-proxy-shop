@@ -3,4 +3,4 @@ import { Router } from 'express';
 import {protectRoute} from '../middleware/protectRoute.ts';
 
 export const incomeStatistic:Router = Router();
-incomeStatistic.get('/statistics',incomeStatistics);
+incomeStatistic.get('/statistics',protectRoute,incomeStatistics);
