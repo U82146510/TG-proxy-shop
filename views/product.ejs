@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products</title>
+    <link rel="stylesheet" href="/admin/product.css" />
+</head>
+<body>
+    <div class="product-container">
+        <h2>Manage Products</h2>
+        <form action="/admin/product" method="post">
+            <h3>Create Product</h3>
+            <input type="text" name="country" placeholder="Country" required />
+            <input type="text" name="isp" placeholder="ISP" required />
+            <input type="text" name="period" placeholder="Period" required />
+            <input type="text" name="price" placeholder="Price" required />
+            <input type="text" name="eid" placeholder="EID" required />
+            <button type="submit">Create</button>
+        </form>
+
+        <form action="/admin/product?_method=PATCH" method="post">
+            <h3>Update Product Price</h3>
+            <input type="text" name="country" placeholder="Country" required />
+            <input type="text" name="isp" placeholder="ISP" required />
+            <input type="text" name="period" placeholder="Period" required />
+            <input type="text" name="eid" placeholder="EID" required />
+            <input type="text" name="price" placeholder="New Price" required />
+            <button type="submit">Update</button>
+        </form>
+
+        <form action="/admin/product?_method=DELETE" method="post">
+            <h3>Delete Product</h3>
+            <input type="text" name="country" placeholder="Country" required />
+            <input type="text" name="isp" placeholder="ISP" required />
+            <input type="text" name="period" placeholder="Period" required />
+            <input type="text" name="price" placeholder="Price" required />
+            <input type="text" name="eid" placeholder="EID" required />
+            <button type="submit">Delete</button>
+        </form>
+
+    </div>
+    
+</body>
+</html>

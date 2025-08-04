@@ -10,11 +10,19 @@ const schemaProduct = z.object({
     eid:z.string()
 })
 
+export const productGet = async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        res.render('product',{error:null,message:null})
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const createProduct = async (req:Request,res:Response,next:NextFunction)=>{
     const parsed = schemaProduct.safeParse(req.body);
     try {
          if(!parsed.success){
-            res.status(400).json({error:'Wrong input'});
+            res.status(400).render('product',{error:'Wrong input',message:null});
             return;
         }
         const {country,isp,period,price,eid} = parsed.data;
@@ -25,7 +33,7 @@ export const createProduct = async (req:Request,res:Response,next:NextFunction)=
             price:price,
             eid:eid
         });
-        res.status(201).json({message:`Pruduct ${createProduct.country} created`})
+        res.status(201).render('product',{error:null,message:`Pruduct ${createProduct.country} created`});
     } catch (error) {
         next(error)
     }
@@ -37,15 +45,15 @@ export const deleteProduct = async (req:Request,res:Response,next:NextFunction)=
     const parsed = schemaProduct.safeParse(req.body);
     try {
         if(!parsed.success){
-            res.status(400).json({error:'Wrong input'});
+            res.status(400).render('product',{error:'Wrong input',message:null});
             return;
         }
         const {country,isp,period,price,eid} = parsed.data;
         const deleteProduct = await Product.findOneAndDelete({country,isp,period,price,eid});
         if (!deleteProduct) {
-             return res.status(404).json({ error: 'Product not found' });
+             return res.status(404).render('product',{ error: 'Product not found',message:null });
         }
-        res.status(200).json({message:`Product ${deleteProduct?.country} deleted`});
+        res.status(200).render('product',{error:null,message:`Product ${deleteProduct?.country} deleted`});
     } catch (error) {
         next(error)
     }
@@ -57,7 +65,7 @@ export const updateProduct = async(req:Request,res:Response,next:NextFunction)=>
     const parsed = schemaProduct.safeParse(req.body);
     try {
         if(!parsed.success){
-            res.status(400).json({error:'Wrong input'});
+            res.status(400).render('product',{error:'Wrong input',message:null});
             return;
         }
         const {country,isp,period,price,eid} = parsed.data;
@@ -72,10 +80,10 @@ export const updateProduct = async(req:Request,res:Response,next:NextFunction)=>
             }
         },{new:true});
         if (!updateProduct) {
-             return res.status(404).json({ error: 'Product not found' });
+             return res.status(404).render('product',{ error: 'Product not found',message:null });
         }
 
-        res.status(200).json({message:`Product ${updateProduct.country} updated`})
+        res.status(200).render('product',{error:null,message:`Product ${updateProduct.country} updated`})
     } catch (error) {
         next(error)
     }
