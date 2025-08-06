@@ -217,6 +217,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
                 price:productPrice,
                 period:period,
                 eid:proxyLoginDetails?.eid,
+                proxy_id:proxyLoginDetails?.proxy_id,
                 proxy_independent_http_hostname:proxyLoginDetails?.proxy_independent_http_hostname,
                 proxy_independent_socks5_hostname:proxyLoginDetails?.proxy_independent_socks5_hostname,
                 proxy_independent_port:proxyLoginDetails?.proxy_independent_port,

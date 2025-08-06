@@ -133,7 +133,9 @@ export function orderHandler(bot: Bot<Context>) {
                 return;
             }
             
-            const newExpireDate = addDays(currentDate, addedDays);
+            
+            const newExpireAt = addDays(currentDate, addedDays);
+            const formattedDate = format(newExpireAt, 'yyyy-MM-dd HH:mm:ss');
 
             const product = await Product.findOne({ period: period, isp: order.isp });
             if (!product) {
@@ -162,15 +164,14 @@ export function orderHandler(bot: Bot<Context>) {
             
             const total = userBalance.minus(productPrice);
             user.balance = total.toString();
-            order.expireAt = newExpireDate;
-            //somwhere here I should make the request to extend order
-            //await extendProxy(newExpireDate,)
+            order.expireAt = newExpireAt;
+            await extendProxy(formattedDate,order.proxy_id)
             await user.save();
             await order.save();
 
             const keyboard = new InlineKeyboard().text('📦 My Orders', 'my_orders').row();
             keyboard.text('🏠 Main Menu', 'back_to_menu').row();
-            const msg = await ctx.reply(`✅ Order extended by ${addedDays} day(s).\n🕒 New expiration: ${newExpireDate.toLocaleString()}`, {
+            const msg = await ctx.reply(`✅ Order extended by ${addedDays} day(s).\n🕒 New expiration: ${formattedDate.toLocaleString()}`, {
                 reply_markup: keyboard
             });
 
