@@ -2,10 +2,11 @@ import { Bot, Context, InlineKeyboard } from "grammy";
 import { redis } from "../utils/redis.ts";
 import { deleteCachedMessages } from "../utils/cleanup.ts";
 import {Order} from "../../models/Orders.ts";
-import { addDays } from 'date-fns';
+import {format, addDays } from 'date-fns';
 import {User} from '../../models/User.ts';
 import {Product} from '../../models/Products.ts';
 import {Decimal} from "decimal.js";
+import { extendProxy} from '../utils/extendProxy.ts';
 
 export function orderHandler(bot: Bot<Context>) {
     bot.callbackQuery('my_orders', async (ctx: Context) => {
@@ -34,17 +35,28 @@ export function orderHandler(bot: Bot<Context>) {
 
             const redisKey = `order_list${telegramId}`;
             for (const [index, order] of orders.entries()) {
-                const expireDateFormatted = order.expireAt.toLocaleDateString('en-US',{
-                    year:'numeric',
-                    month:'short',
-                    day:'numeric'
-                })
                 const msgText = `📦 <b>Order #${index + 1}</b>\n\n` +
                     `🌍 Country: <b>${order.country}</b>\n` +
                     `📡 ISP: <b>${order.isp}</b>\n` +
-                    `🗓️ Expires on: <b>${expireDateFormatted}</b>\n`+
+                    `🗓️ Expires on: <b>${order.expireAt}</b>\n` +
                     `💰 Price: <b>$${order.price}</b>\n` +
-                    `🆔 EID: <code>${order.eid}</code>`;
+                    `🆔 EID: <code>${order.eid}</code>\n\n` +
+                    `🔐 <b>Credentials</b>\n` +
+                    `👤 User: <code>${order.user}</code>\n` +
+                    `🔑 Pass: <code>${order.pass}</code>\n\n` +
+                    `🌐 <b>Proxy Hostnames</b>\n` +
+                    `HTTP: <code>${order.proxy_independent_http_hostname}</code>\n` +
+                    `SOCKS5: <code>${order.proxy_independent_socks5_hostname}</code>\n\n` +
+                    `📦 <b>Ports</b>\n` +
+                    `HTTP Port: <code>${order.proxy_independent_port}</code>\n` +
+                    `SOCKS5 Port: <code>${order.proxy_independent_port}</code>\n\n` +
+
+                    `🔄 Change IP URL: <code>${order.proxy_change_ip_url}</code>\n\n`+
+                    
+                    `🔗 <b>Direct Connection</b>\n` +
+                    `📶 HTTP: <code>${order.proxy_hostname}:${order.proxy_http_port}</code>\n` +
+                    `🧦 SOCKS5: <code>${order.proxy_hostname}:${order.proxy_socks5_port}</code>\n\n`;
+
 
                 const keyboard = new InlineKeyboard()
                     .text("⏳ Extend", `extend_order_${order._id}`)
@@ -120,7 +132,7 @@ export function orderHandler(bot: Bot<Context>) {
                 await ctx.reply('Invalid period format.');
                 return;
             }
-
+            
             const newExpireDate = addDays(currentDate, addedDays);
 
             const product = await Product.findOne({ period: period, isp: order.isp });
@@ -152,7 +164,7 @@ export function orderHandler(bot: Bot<Context>) {
             user.balance = total.toString();
             order.expireAt = newExpireDate;
             //somwhere here I should make the request to extend order
-
+            //await extendProxy(newExpireDate,)
             await user.save();
             await order.save();
 

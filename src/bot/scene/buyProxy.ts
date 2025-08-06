@@ -7,7 +7,8 @@ import {User} from '../../models/User.ts';
 import {Order} from '../../models/Orders.ts';
 import {Decimal} from "decimal.js";
 import { Types } from "mongoose";
-import { addDays } from 'date-fns';
+import {format, addDays } from 'date-fns';
+import {fetchProxy} from '../utils/buyProxy.ts';
 
 export function registerBuyProxyHandler(bot:Bot<Context>){
     bot.callbackQuery('buy_proxy',async(ctx:Context)=>{
@@ -204,18 +205,28 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
                     balance:total
                 }
             });
-            //somwhere here i should add the product i got from the API
+
+            const comment:string = telegramId as unknown as string;
+            const expireProxy: string = format(expireAt, 'yyyy-MM-dd HH:mm:ss'); 
+            const proxyLoginDetails =  await fetchProxy(eid,comment,expireProxy);
+ 
             const addOrder = await Order.create({
                 userId:telegramId,
                 country:'Moldova',
                 isp:ispName.toLowerCase(),
                 price:productPrice,
                 period:period,
-                eid:eid,
-                ip:'1.1.1.1',
-                user:'user',
-                pass:'pass',
-                expireAt:expireAt
+                eid:proxyLoginDetails?.eid,
+                proxy_independent_http_hostname:proxyLoginDetails?.proxy_independent_http_hostname,
+                proxy_independent_socks5_hostname:proxyLoginDetails?.proxy_independent_socks5_hostname,
+                proxy_independent_port:proxyLoginDetails?.proxy_independent_port,
+                proxy_http_port:proxyLoginDetails?.proxy_http_port,
+                proxy_socks5_port:proxyLoginDetails?.proxy_socks5_port,
+                proxy_hostname:proxyLoginDetails?.proxy_hostname,
+                proxy_change_ip_url:proxyLoginDetails?.proxy_change_ip_url,
+                user:proxyLoginDetails?.proxy_login,
+                pass:proxyLoginDetails?.proxy_pass,
+                expireAt:proxyLoginDetails?.proxy_exp
             })
             user.orders.push(addOrder._id as Types.ObjectId);
             await user.save()

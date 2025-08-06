@@ -7,7 +7,15 @@ export interface IOrder extends Document{
     price:number;
     period:string;
     eid:string;
-    ip:string;
+
+    proxy_independent_http_hostname:string,
+    proxy_independent_socks5_hostname:string,
+    proxy_independent_port:string,
+    proxy_http_port:string,
+    proxy_socks5_port:string,
+    proxy_hostname:string,
+    proxy_change_ip_url:string,
+
     user:string;
     pass:string;
     expireAt:Date
@@ -20,7 +28,13 @@ const orderSchema = new Schema<IOrder>({
     price:{type:Number,required:true,default:0},
     period:{type:String,required:true},
     eid:{type:String,required:true},
-    ip: { type: String, required: true },
+    proxy_independent_http_hostname:{type:String,required:true},
+    proxy_independent_socks5_hostname:{type:String,required:true},
+    proxy_independent_port:{type:String,required:true},
+    proxy_http_port:{type:String,required:true},
+    proxy_socks5_port:{type:String,required:true},
+    proxy_hostname:{type:String,required:true},
+    proxy_change_ip_url:{type:String,required:true},
     user: { type: String, required: true },
     pass: { type: String, required: true },
     expireAt: { type: Date, required: true }
