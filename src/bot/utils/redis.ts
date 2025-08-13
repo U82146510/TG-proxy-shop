@@ -1,4 +1,5 @@
 import { createClient,type RedisClientType } from "redis";
+import dotenv from 'dotenv';
 
 type RedisConfig = {
     host:string;
@@ -7,6 +8,7 @@ type RedisConfig = {
     maxRetries?:number;
     retryDelays:number;
 };
+
 
 class RedisClient {
     private client:RedisClientType;

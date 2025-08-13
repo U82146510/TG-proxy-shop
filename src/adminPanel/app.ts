@@ -92,7 +92,7 @@ app.use((req:Request,res:Response,next:NextFunction)=>{
 
 export const startAdminPanel = async()=>{
     try {
-        app.listen(port,()=>console.info('Server ON'));
+        app.listen(3000,()=>console.log("Admin Panel"))
     } catch (error) {
         console.error(error);
     }

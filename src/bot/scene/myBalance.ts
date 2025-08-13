@@ -143,10 +143,12 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
 
                 user.tronAddress = wallet.address;
                 user.tronPrivateKey = `${iv.toString('hex')}:${encrypted}`;
+                await user.save();
+                console.log(`✅ Saved TRON address for user ${telegramId}: ${wallet.address}`);
                 } 
-                catch (error) {
-                    console.error(error)
-                }
+            catch (error) {
+                console.error(error)
+            }
       
         }
 
