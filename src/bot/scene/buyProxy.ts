@@ -26,9 +26,23 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
 
         
         try {
-            
             const keyboard = new InlineKeyboard();
-            keyboard.text('Moldova','country_moldova').row()
+            const product = await Product.find();
+            if(product.length === 0){
+                const redisKey = `no_products${telegramId}`;
+                const msg = await ctx.reply('There are not products added yet',{
+                    reply_markup:keyboard.text('Back','back_to_menu').row()
+                });
+                await redis.pushList(redisKey,[String(msg.message_id)])
+                return;
+            }
+            const countries = new Set<string>();
+            for(const arg of product){
+                countries.add(arg.country);
+            }
+            for(const arg of countries){
+                keyboard.text(`${arg}`,`country_${arg}`).row();
+            }
             keyboard.text('Back','back_to_menu').row();
             const redisKey = `buy_proxy${telegramId}`;
             const msg = await ctx.reply('Choose country:',{reply_markup:keyboard});

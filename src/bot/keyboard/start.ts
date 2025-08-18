@@ -10,12 +10,12 @@ export function registerMainMenu(bot: Bot<Context>) {
 
         const languageCode = ctx.from?.language_code ?? 'unknown';
 
-        const msgRU = `Добро пожаловать в @GlobalProxyShop!
+        const msgRU = `Добро пожаловать в GlobalProxyShop!
 Наш сервис предлагает одни из самых доступных 4G мобильных прокси и гибкие тарифы под любые задачи.
 ⚠️ Мы не предоставляем прокси под чёрные цели!
 Вы несёте полную ответственность за использование сервиса и свои действия.`;
 
-        const msgEN = `Welcome to @GlobalProxyShop!
+        const msgEN = `Welcome to GlobalProxyShop!
 We offer some of the most affordable 4G mobile proxies and flexible pricing plans for any need.
 ⚠️ We do not provide proxies for illegal or black-hat purposes!
 You are fully responsible for how you use this service.`;
@@ -42,10 +42,10 @@ You are fully responsible for how you use this service.`;
 
 export function mainMenu(): InlineKeyboard {
     return new InlineKeyboard()
-        .text('Buy Proxy', 'buy_proxy').row()
-        .text('My Balance', 'my_balance')
-        .text('Orders', 'my_orders').row()
-        .text('About', 'about').row()
-        .url('Contact Us', 'https://t.me/GlobalProxy_support')
-        .text('Help', 'my_help').row();
+        .text('👉 Buy Proxy', 'buy_proxy').row()
+        .text('💰 My Balance', 'my_balance')
+        .text('🛒Orders', 'my_orders').row()
+        .text('🗣️ About', 'about').row()
+        .url('☎️Contact Us', 'https://t.me/GlobalProxy_support')
+        .text('🆘Help', 'my_help').row();
 }
