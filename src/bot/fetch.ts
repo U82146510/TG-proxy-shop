@@ -19,13 +19,15 @@ export interface Proxy{
   checker:string,
 }
 
-export async function getProxy():Promise<Proxy[]|undefined>{
+const test = 'bb34976790defa6c149e56af35122bf7';
+
+export async function getProxy(auth:string):Promise<Proxy[]|undefined>{
     const link:string = `https://mobileproxy.space/api.html?command=load_modems`;
     try {
         const response = await fetch(link,{
             method:'GET',
             headers:{
-                'Authorization': 'Bearer bb34976790defa6c149e56af35122bf7'
+                'Authorization': `Bearer ${auth}`
             }
         });
          if (!response.ok) {

@@ -6,7 +6,7 @@ import { getProxy ,type Proxy} from '../fetch.ts'
 import {User} from '../../models/User.ts';
 import {Order} from '../../models/Orders.ts';
 import {Decimal} from "decimal.js";
-import { Types } from "mongoose";
+import { Schema } from "mongoose";
 import {format, addDays } from 'date-fns';
 import {fetchProxy} from '../utils/buyProxy.ts';
 
@@ -69,11 +69,24 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
             return;
         }
         try {
-            const keyboard = new InlineKeyboard();
-            const isps = await getProxy();
-            if(!isps){
+            const product = await Product.find();
+            let authorization = new Set<string>();
+            for(const arg of product){
+                authorization.add(arg.apikey);
+            }
+            const isps:Proxy[] = [];
+            for(const arg of authorization){
+                console.log(arg)
+                const getProxyPerSeller = await getProxy(arg);
+                if(!getProxyPerSeller){
+                    return;
+                }
+                isps.push(...getProxyPerSeller);
+            }
+            if(isps.length===0){
                 return;
             }
+            const keyboard = new InlineKeyboard();
             await redis.set('availableProxy',JSON.stringify(isps))
             const countTotalIsp = new Map<string,number>();
             for(const isp of isps){
@@ -82,7 +95,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
             }
            
             for(const isp of countTotalIsp){
-                   keyboard.text(`${isp[0]}(${isp[1]})`,`operator_${countryName}_${isp[0]}`).row()
+                keyboard.text(`${isp[0]}(${isp[1]})`,`operator_${countryName}_${isp[0]}`).row()
             }
 
             keyboard.text('Back','buy_proxy').row();
@@ -243,7 +256,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
                 pass:proxyLoginDetails?.proxy_pass,
                 expireAt:proxyLoginDetails?.proxy_exp
             })
-            user.orders.push(addOrder._id as Types.ObjectId);
+            user.orders.push(addOrder._id as Schema.Types.ObjectId);
             await user.save()
             const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
             const redisKey = `balance_added${telegramId}`;

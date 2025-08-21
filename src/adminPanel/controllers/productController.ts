@@ -7,7 +7,7 @@ const schemaProduct = z.object({
     isp:z.string(),
     period:z.string(),
     price:z.coerce.number(),
-    eid:z.string()
+    apikey:z.string()
 })
 
 export const productGet = async(req:Request,res:Response,next:NextFunction)=>{
@@ -25,13 +25,13 @@ export const createProduct = async (req:Request,res:Response,next:NextFunction)=
             res.status(400).render('product',{error:'Wrong input',message:null});
             return;
         }
-        const {country,isp,period,price,eid} = parsed.data;
+        const {country,isp,period,price,apikey} = parsed.data;
         const createProduct = await Product.create({
             country:country,
             isp:isp,
             period:period,
             price:price,
-            eid:eid
+            apikey:apikey
         });
         res.status(201).render('product',{error:null,message:`Pruduct ${createProduct.country} created`});
     } catch (error) {
@@ -48,8 +48,8 @@ export const deleteProduct = async (req:Request,res:Response,next:NextFunction)=
             res.status(400).render('product',{error:'Wrong input',message:null});
             return;
         }
-        const {country,isp,period,price,eid} = parsed.data;
-        const deleteProduct = await Product.findOneAndDelete({country,isp,period,price,eid});
+        const {country,isp,period,price,apikey} = parsed.data;
+        const deleteProduct = await Product.findOneAndDelete({country,isp,period,price,apikey});
         if (!deleteProduct) {
              return res.status(404).render('product',{ error: 'Product not found',message:null });
         }
@@ -68,12 +68,12 @@ export const updateProduct = async(req:Request,res:Response,next:NextFunction)=>
             res.status(400).render('product',{error:'Wrong input',message:null});
             return;
         }
-        const {country,isp,period,price,eid} = parsed.data;
+        const {country,isp,period,price,apikey} = parsed.data;
         const updateProduct = await Product.findOneAndUpdate({
             country:country,
             isp:isp,
             period:period,
-            eid:eid
+            apikey:apikey
         },{
             $set:{
                 price:price

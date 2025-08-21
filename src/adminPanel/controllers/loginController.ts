@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   try {
     if (!parsed.success) {
       res.status(400).render('index', {
-        error: 'Invalid input format'
+        error: 'Incorrect password'
       });
       return;
     }
@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
     if (!user || !(user instanceof Auth)) {
       res.status(404).render('index', {
-        error: 'User not found'
+        error: 'Incorrect password'
       });
       return;
     }

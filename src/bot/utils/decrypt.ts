@@ -45,3 +45,8 @@ export async function decryptKey(encryptedData: string): Promise<string> {
         throw new Error('Failed to decrypt data');
     }
 }
+
+
+const key='a9ceefe789cf9c7115ecd49dd490daf7:bdabe0be7acdabfd597551c4e1ec2c986040e9886eaf9812d1a4cf543ec2d21aa3a9037954267c4d32c22872748fbb53535e26c4d03de4295f0039047f4ac7442fd5447d02285612c184a54f36552a3b'
+
+decryptKey(key).then(res=>console.log(res)).catch(err=>console.error(err))

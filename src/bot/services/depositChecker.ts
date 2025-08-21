@@ -3,7 +3,10 @@ import { Decimal } from 'decimal.js';
 import { User } from '../../models/User.ts';
 import { Bot, Context } from 'grammy';
 import {redis} from '../utils/redis.ts';
-import {shopBalance} from '../../models/shopBalance.ts'
+import {shopBalance} from '../../models/shopBalance.ts';
+import mongoose from 'mongoose';
+const Decimal128 = mongoose.Types.Decimal128;
+
 
 export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
     try {
@@ -33,7 +36,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         continue;
                     }
 
-                    const expected = new Decimal(user.expectedAmount || '0');
+                    const expected = new Decimal(user.expectedAmount?.toString() || '0');
                     const current = new Decimal(balance);
                     const tolerance = new Decimal(0.0001);
 
@@ -52,9 +55,9 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                             return;
                         }
                         const {Month,Total,shop} = shopTotalbalance;
-                        const monthIncome = new Decimal(Month);
-                        const totalIncome = new Decimal(Total);
-                        const shopCommision = new Decimal(shop);
+                        const monthIncome = new Decimal((Month as unknown as mongoose.Types.Decimal128).toString());
+                        const totalIncome = new Decimal((Total as unknown as mongoose.Types.Decimal128).toString());
+                        const shopCommision = new Decimal((shop as unknown as mongoose.Types.Decimal128).toString());
 
                         const finalMonthIncome = monthIncome.plus(current);
                         const finalTotalIncome = totalIncome.plus(current);
@@ -64,10 +67,10 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         await shopBalance.findOneAndUpdate(
                             { key: 'shop-status' },
                             {
-                                $inc: {
-                                Month: current.toNumber(),
-                                Total: current.toNumber(),
-                                shop: current.mul(0.1).toNumber()
+                                $set: {
+                                    Month: Decimal128.fromString(finalMonthIncome.toString()),
+                                    Total: Decimal128.fromString(finalTotalIncome.toString()),
+                                    shop: Decimal128.fromString(finalShopCommision.toString())
                                 }
                             },
                             { new: true, upsert: true }

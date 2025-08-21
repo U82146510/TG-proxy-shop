@@ -6,11 +6,11 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({path:path.resolve('../../.env')});
+dotenv.config({path:path.resolve(__dirname,'../../../.env')});
 
 const api = process.env.api_trcgrid;
 if(!api){
-  throw new Error('missing tronn GRID API');
+  throw new Error('missing tron GRID API');
 }
 
 const tronWeb = new TronWeb({
@@ -50,18 +50,12 @@ export async function getUSDTbalance(address: string): Promise<number | undefine
       return undefined;
     }
 
-    const accountInfo = await tronWeb.trx.getAccount(address);
+    const contract = await tronWeb.contract().at(USDT_CONTRACT);
+    const balance = await contract.balanceOf(address).call({
+      from:address
+    });
     
-    if (accountInfo?.assetV2?.length) {
-      const usdtAsset = accountInfo.assetV2.find(
-        (asset: any) => asset.key === USDT_CONTRACT
-      );
-      if (usdtAsset) {
-        return Number(usdtAsset.value) / 1e6;
-      }
-    }
-    
-    return 0; // No USDT balance found
+    return Number(balance.toString())/1e6;
   } catch (error) {
     console.error('Error fetching USDT balance:', {
       address: address,
@@ -82,3 +76,7 @@ async function checkConnection() {
 }
 
 checkConnection();
+
+const usdtaddress = 'TD4xoEeXnEGPdLNwcTrQfVsybuUyc5BePW'
+
+getUSDTbalance(usdtaddress).then(res=>console.log(res)).catch(err=>console.error(err));
