@@ -31,7 +31,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                     }
 
                     const balance = await getUSDTbalance(user.tronAddress);
-                    if (balance === undefined || isNaN(balance)) {
+                    if (balance === undefined || balance.isNaN()) {
                         console.log(`⏩ Skipping user ${user.userId} - invalid balance`);
                         continue;
                     }
@@ -42,10 +42,10 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
 
                     if (current.greaterThanOrEqualTo(expected.minus(tolerance))) {
                         // Update user balance
-                        const newBalance = new Decimal(user.balance).plus(current).toFixed(6);
-                        user.balance = newBalance;
+                        const newBalance = new Decimal(user.balance.toString()).plus(current).toFixed(6);
+                        user.balance = Decimal128.fromString(newBalance.toString());
                         user.hasPendingDeposit = false;
-                        user.expectedAmount = '';
+                        user.expectedAmount = Decimal128.fromString("0");
                         user.expectedAmountExpiresAt = undefined;
                         await user.save();
 
@@ -103,7 +103,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
 
         for (const expiredUser of expiredUsers) {
             expiredUser.hasPendingDeposit = false;
-            expiredUser.expectedAmount = '';
+            expiredUser.expectedAmount = Decimal128.fromString("0");
             expiredUser.expectedAmountExpiresAt = undefined;
             await expiredUser.save();
 

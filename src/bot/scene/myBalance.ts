@@ -7,6 +7,8 @@ import crypto from 'crypto';
 import dotnev from 'dotenv';
 import { fileURLToPath } from "url";
 import path from "path";
+import mongoose from "mongoose";
+const Decimal128 = mongoose.Types.Decimal128; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -103,7 +105,7 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
 
         const amount = parseFloat(input);
         if (isNaN(amount) || amount <= 0) {
-            await ctx2.reply('❌ User not found.');
+            await ctx2.reply('❌ Incorrect amount');
             return;
         }
 
@@ -155,7 +157,7 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
  
         const expirationMinutes = 15;
         user.hasPendingDeposit = true;
-        user.expectedAmount = amount.toFixed(6);
+        user.expectedAmount = Decimal128.fromString(amount.toString());
         user.expectedAmountExpiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
 
         await user.save();

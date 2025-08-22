@@ -1,13 +1,13 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document,Types } from "mongoose";
 
 export interface IUser extends Document {
   userId: string;
-  balance: string;
+  balance: Types.Decimal128;
   orders: Schema.Types.ObjectId[];
   tronAddress: string;
   tronPrivateKey: string;
   hasPendingDeposit: boolean;
-  expectedAmount: string;
+  expectedAmount: Types.Decimal128;
   expectedAmountExpiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -15,12 +15,12 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>({
   userId: { type: String, required: true, unique: true },
-  balance: { type: String, default: "0" },
+  balance: { type: Schema.Types.Decimal128, default: Types.Decimal128.fromString("0") },
   orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
   tronAddress: { type: String },
   tronPrivateKey: { type: String },
   hasPendingDeposit: { type: Boolean, default: false },
-  expectedAmount: { type: String },
+  expectedAmount: { type: Schema.Types.Decimal128, default: Types.Decimal128.fromString("0") },
   expectedAmountExpiresAt: { type: Date }
 }, { timestamps: true });
 

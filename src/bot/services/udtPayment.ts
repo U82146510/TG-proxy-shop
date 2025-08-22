@@ -2,6 +2,8 @@ import { TronWeb } from "tronweb";
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from "path";
+import {Decimal} from "decimal.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +45,7 @@ export async function generateWallet(): Promise<TronWallet | undefined> {
 
 const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
 
-export async function getUSDTbalance(address: string): Promise<number | undefined> {
+export async function getUSDTbalance(address: string): Promise<Decimal | undefined> {
   try {
     if (!tronWeb.isAddress(address)) {
       console.error('Invalid TRON address:', address);
@@ -55,7 +57,7 @@ export async function getUSDTbalance(address: string): Promise<number | undefine
       from:address
     });
     
-    return Number(balance.toString())/1e6;
+    return new Decimal(balance.toString()).div(1e6)
   } catch (error) {
     console.error('Error fetching USDT balance:', {
       address: address,
@@ -65,7 +67,7 @@ export async function getUSDTbalance(address: string): Promise<number | undefine
   }
 }
 
-// Verify connection
+
 async function checkConnection() {
   try {
     const block = await tronWeb.trx.getCurrentBlock();
@@ -76,7 +78,3 @@ async function checkConnection() {
 }
 
 checkConnection();
-
-const usdtaddress = 'TD4xoEeXnEGPdLNwcTrQfVsybuUyc5BePW'
-
-getUSDTbalance(usdtaddress).then(res=>console.log(res)).catch(err=>console.error(err));
