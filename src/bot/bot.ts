@@ -14,6 +14,7 @@ import {registerAboutMenu} from './scene/aboutMenu.ts';
 import {helpMenu} from './scene/helpMenu.ts';
 import {startAdminPanel} from '../adminPanel/app.ts';
 import {resetBalanceEveryMonth} from '../adminPanel/utils/resetMontlyBalance.ts';
+import {deleteOrderAndReturnBackToSaleProxy} from './job/deleteOrderChecker.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +45,7 @@ const start = async()=>{
         startDepositChecker(bot);
         helpMenu(bot);
         resetBalanceEveryMonth();
+        deleteOrderAndReturnBackToSaleProxy();
         await bot.start();
     } catch (error) {
         console.error(error);

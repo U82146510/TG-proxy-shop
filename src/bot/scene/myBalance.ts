@@ -103,9 +103,14 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
             return;
         }
 
-        const amount = parseFloat(input);
+        const amount = Number(input);
         if (isNaN(amount) || amount <= 0) {
-            await ctx2.reply('❌ Incorrect amount');
+            const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
+            const redisKey = `incorrect_amount${telegramId}`; // do not forget it
+            const msg = await ctx2.reply('❌ Incorrect amount',{
+                reply_markup:keyboard
+            }); 
+            await redis.pushList(redisKey,[String(msg.message_id)])
             return;
         }
 
@@ -113,7 +118,12 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
 
         const user = await User.findOne({ userId: telegramId });
         if (!user) {
-            await ctx2.reply('❌ User not found.');
+            const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
+            const redisKey = `user_not_found${telegramId}`;  // do not forget it
+            const msg = await ctx2.reply('❌ User not found.',{
+                reply_markup:keyboard
+            });
+            await redis.pushList(redisKey,[String(msg.message_id)]);
             return;
         }
 

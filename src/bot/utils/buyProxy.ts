@@ -86,8 +86,8 @@ async function stopProxyAutoRenewal(id:number) {
 };
 
 
-async function canBuyOff(eid:string) {
-    const url = `https://mobileproxy.space/api.html?command=edit_modems&eid=${eid}&canbuy=0`
+export async function canBuyOff(eid:string,status:"0"|"1"="0") {
+    const url = `https://mobileproxy.space/api.html?command=edit_modems&eid=${eid}&canbuy=${status}`;
     try {
         const response = await fetch(url,{
             method:"GET",

@@ -9,6 +9,8 @@ import {Decimal} from "decimal.js";
 import { Schema } from "mongoose";
 import {format, addDays } from 'date-fns';
 import {fetchProxy} from '../utils/buyProxy.ts';
+import mongoose from "mongoose";
+const Decimal128 = mongoose.Types.Decimal128;
 
 export function registerBuyProxyHandler(bot:Bot<Context>){
     bot.callbackQuery('buy_proxy',async(ctx:Context)=>{
@@ -214,9 +216,8 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
                 throw new Error('Invalid period value');
             }
             const expireAt:Date = addDays(new Date(),periodDays);
-            
             const productPrice = new Decimal(product.price);
-            const userBalance = new Decimal(user.balance);
+            const userBalance = new Decimal(user.balance.toString());
             if(userBalance.lessThan(productPrice)){
                 const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
                 const redisKey = `inssuficent_balance_${telegramId}`
@@ -229,7 +230,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
             const total = userBalance.minus(productPrice);
             await User.findOneAndUpdate({userId:telegramId},{
                 $set:{
-                    balance:total
+                    balance:Decimal128.fromString(total.toString())
                 }
             });
 

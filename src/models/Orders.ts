@@ -43,6 +43,5 @@ const orderSchema = new Schema<IOrder>({
 
 });
 
-orderSchema.index({expireAt:1},{expireAfterSeconds:0})
 
 export const Order = model<IOrder>('Order',orderSchema);

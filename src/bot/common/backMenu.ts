@@ -34,6 +34,8 @@ export function backToMainMenu(bot: Bot<Context>) {
         await deleteCachedMessages(ctx, `help_menu${telegramId}`);
         await deleteCachedMessages(ctx, `inpurt_balance${telegramId}`);
         await deleteCachedMessages(ctx,`no_products${telegramId}`);
+        await deleteCachedMessages(ctx,`user_not_found${telegramId}`);
+        await deleteCachedMessages(ctx,`incorrect_amount${telegramId}`);
 
        
         const msgRU = `Добро пожаловать в @GlobalProxyShop!
