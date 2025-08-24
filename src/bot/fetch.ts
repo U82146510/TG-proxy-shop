@@ -35,7 +35,6 @@ export async function getProxy(auth:string):Promise<Proxy[]|undefined>{
         }
         const data = await response.json() as Proxy[];
         const result:Proxy[]=data.filter(value=>value.canbuy==="1"&&value.check_err_count==="0"&&value.proxy_exp===null&&value.status==="1")
-        console.log(result);
         return result;
     } catch (error) {
         console.error(error)

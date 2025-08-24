@@ -38,12 +38,12 @@ export function backToMainMenu(bot: Bot<Context>) {
         await deleteCachedMessages(ctx,`incorrect_amount${telegramId}`);
 
        
-        const msgRU = `Добро пожаловать в @GlobalProxyShop!
+        const msgRU = `Добро пожаловать в GlobalProxyShop!
 Наш сервис предлагает одни из самых доступных 4G мобильных прокси и гибкие тарифы под любые задачи.
 ⚠️ Мы не предоставляем прокси под чёрные цели!
 Вы несёте полную ответственность за использование сервиса и свои действия.`;
 
-        const msgEN = `Welcome to @GlobalProxyShop!
+        const msgEN = `Welcome to GlobalProxyShop!
 We offer some of the most affordable 4G mobile proxies and flexible pricing plans for any need.
 ⚠️ We do not provide proxies for illegal or black-hat purposes!
 You are fully responsible for how you use this service.`;

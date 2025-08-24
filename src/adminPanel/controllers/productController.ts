@@ -27,8 +27,8 @@ export const createProduct = async (req:Request,res:Response,next:NextFunction)=
         }
         const {country,isp,period,price,apikey} = parsed.data;
         const createProduct = await Product.create({
-            country:country,
-            isp:isp,
+            country:country.toLowerCase(),
+            isp:isp.toLowerCase(),
             period:period,
             price:price,
             apikey:apikey
@@ -49,7 +49,13 @@ export const deleteProduct = async (req:Request,res:Response,next:NextFunction)=
             return;
         }
         const {country,isp,period,price,apikey} = parsed.data;
-        const deleteProduct = await Product.findOneAndDelete({country,isp,period,price,apikey});
+        const deleteProduct = await Product.findOneAndDelete(
+            {
+                country:country.toLowerCase(),
+                isp:isp.toLocaleLowerCase(),
+                period,
+                price,
+                apikey});
         if (!deleteProduct) {
              return res.status(404).render('product',{ error: 'Product not found',message:null });
         }
@@ -70,8 +76,8 @@ export const updateProduct = async(req:Request,res:Response,next:NextFunction)=>
         }
         const {country,isp,period,price,apikey} = parsed.data;
         const updateProduct = await Product.findOneAndUpdate({
-            country:country,
-            isp:isp,
+            country:country.toLowerCase(),
+            isp:isp.toLocaleLowerCase(),
             period:period,
             apikey:apikey
         },{

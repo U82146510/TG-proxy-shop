@@ -71,7 +71,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
             return;
         }
         try {
-            const product = await Product.find();
+            const product = await Product.find({country:countryName});
             let authorization = new Set<string>();
             for(const arg of product){
                 authorization.add(arg.apikey);
@@ -131,6 +131,7 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
             if (!selectedIsp) return;
             const eid = selectedIsp.eid;
             const keyboard = new InlineKeyboard();
+            console.log(countryName,ispName,eid)
             keyboard.text('1 day',`period_${countryName}_${ispName}_${eid}_1`).row();
             keyboard.text('7 days',`period_${countryName}_${ispName}_${eid}_7`).row();
             keyboard.text('14 days',`period_${countryName}_${ispName}_${eid}_14`).row();
