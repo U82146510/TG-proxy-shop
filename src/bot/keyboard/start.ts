@@ -44,8 +44,9 @@ export function mainMenu(): InlineKeyboard {
     return new InlineKeyboard()
         .text('👉 Buy Proxy', 'buy_proxy').row()
         .text('💰 My Balance', 'my_balance')
-        .text('🛒Orders', 'my_orders').row()
-        .text('🗣️ About', 'about').row()
-        .url('☎️Contact Us', 'https://t.me/GlobalProxy_support')
-        .text('🆘Help', 'my_help').row();
+        .text('🛒 Orders', 'my_orders').row()
+        .text('🗣️ About', 'about')
+        .text('👤 My ID', 'myinfo').row()
+        .url('☎️ Contact Us', 'https://t.me/GlobalProxy_support')
+        .text('🆘 Help', 'my_help').row();
 }
