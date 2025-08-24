@@ -7,6 +7,9 @@ import {User} from '../../models/User.ts';
 import {Product} from '../../models/Products.ts';
 import {Decimal} from "decimal.js";
 import { extendProxy} from '../utils/extendProxy.ts';
+import mongoose from "mongoose";
+const Decimal128 = mongoose.Types.Decimal128;
+
 
 export function orderHandler(bot: Bot<Context>) {
     bot.callbackQuery('my_orders', async (ctx: Context) => {
@@ -150,7 +153,7 @@ export function orderHandler(bot: Bot<Context>) {
             }
 
             const productPrice = new Decimal(product.price);
-            const userBalance = new Decimal(user.balance);
+            const userBalance = new Decimal(user.balance.toString());
             if (userBalance.lessThan(productPrice)) {
                 const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
                 const redisKey = `insufficient_balance_when_extending${telegramId}`;
@@ -163,7 +166,7 @@ export function orderHandler(bot: Bot<Context>) {
 
             
             const total = userBalance.minus(productPrice);
-            user.balance = total.toString();
+            user.balance = Decimal128.fromString(total.toString());
             order.expireAt = newExpireAt;
             await extendProxy(formattedDate,order.proxy_id)
             await user.save();
@@ -181,4 +184,4 @@ export function orderHandler(bot: Bot<Context>) {
             console.log(error);
         }
     });
-}
+};
