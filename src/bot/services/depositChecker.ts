@@ -49,32 +49,39 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         user.expectedAmountExpiresAt = undefined;
                         await user.save();
 
+                        
+                     const shopTotalbalance = await shopBalance.findOneAndUpdate(
+                        { key: 'shop-status' },
+                        {
+                            $setOnInsert: {
+                                Month: Decimal128.fromString("0"),
+                                Total: Decimal128.fromString("0"),
+                                shop: Decimal128.fromString("0")
+                            }
+                        },
+                        { new: true, upsert: true }
+                    );
 
-                        const shopTotalbalance = await shopBalance.findOne({key:'shop-status'});
-                        if(!shopTotalbalance){
-                            return;
-                        }
-                        const {Month,Total,shop} = shopTotalbalance;
-                        const monthIncome = new Decimal((Month as unknown as mongoose.Types.Decimal128).toString());
-                        const totalIncome = new Decimal((Total as unknown as mongoose.Types.Decimal128).toString());
-                        const shopCommision = new Decimal((shop as unknown as mongoose.Types.Decimal128).toString());
+                    const monthIncome = new Decimal(shopTotalbalance.Month.toString());
+                    const totalIncome = new Decimal(shopTotalbalance.Total.toString());
+                    const shopCommision = new Decimal(shopTotalbalance.shop.toString());
 
-                        const finalMonthIncome = monthIncome.plus(current);
-                        const finalTotalIncome = totalIncome.plus(current);
-                        const commision = new Decimal(current).mul(0.1);
-                        const finalShopCommision = shopCommision.plus(commision);
+                    const finalMonthIncome = monthIncome.plus(current);
+                    const finalTotalIncome = totalIncome.plus(current);
+                    const commision = current.mul(0.1);
+                    const finalShopCommision = shopCommision.plus(commision);
 
-                        await shopBalance.findOneAndUpdate(
-                            { key: 'shop-status' },
-                            {
-                                $set: {
-                                    Month: Decimal128.fromString(finalMonthIncome.toString()),
-                                    Total: Decimal128.fromString(finalTotalIncome.toString()),
-                                    shop: Decimal128.fromString(finalShopCommision.toString())
-                                }
-                            },
-                            { new: true, upsert: true }
-                            );
+                    await shopBalance.findOneAndUpdate(
+                        { key: 'shop-status' },
+                        {
+                            $set: {
+                                Month: Decimal128.fromString(finalMonthIncome.toString()),
+                                Total: Decimal128.fromString(finalTotalIncome.toString()),
+                                shop: Decimal128.fromString(finalShopCommision.toString())
+                            }
+                        },
+                        { new: true, upsert: true }
+                    );
 
                         // Notify user
                        const sentMsg =  await bot.api.sendMessage(
