@@ -127,55 +127,52 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
             return;
         }
 
-        if (!user.tronAddress || !user.tronPrivateKey) {
-            const wallet = await generateWallet();
-            if (!wallet) {
-                const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
-                const msg =  await ctx2.reply('⚠️ Failed to generate wallet.',{
-                    reply_markup:keyboard
-                });
-                await redis.pushList(`failed_to_generate${telegramId}`,[String(msg.message_id)])
-                return;
-            }
 
-            const secretKey = process.env.encryptionKey;
-            if(!secretKey){
-                throw new Error('missing encryption key');
-            }
-            try {
-                const keyBuffer = Buffer.from(secretKey,'hex');
-                if(keyBuffer.length!==32){
-                    throw new Error('Encryption key must be 32 bytes (64 hex characters)');
-                }
-                const algorithm = 'aes-256-cbc';
-                const iv = crypto.randomBytes(16);
-                const cipher = crypto.createCipheriv(algorithm,keyBuffer,iv);
-                let encrypted = cipher.update(wallet.privateKey,'utf8','hex');
-                encrypted+=cipher.final('hex');
-
-                user.tronAddress = wallet.address;
-                user.tronPrivateKey = `${iv.toString('hex')}:${encrypted}`;
-                await user.save();
-                console.log(`✅ Saved TRON address for user ${telegramId}: ${wallet.address}`);
-                } 
-            catch (error) {
-                console.error(error)
-            }
-      
+        const wallet = await generateWallet();
+        if (!wallet) {
+            const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
+            const msg =  await ctx2.reply('⚠️ Failed to generate wallet.',{
+                reply_markup:keyboard
+            });
+            await redis.pushList(`failed_to_generate${telegramId}`,[String(msg.message_id)])
+            return;
         }
 
- 
-        const expirationMinutes = 15;
-        user.hasPendingDeposit = true;
-        user.expectedAmount = Decimal128.fromString(amount.toString());
-        user.expectedAmountExpiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
+        const secretKey = process.env.encryptionKey;
+        if(!secretKey){
+            throw new Error('missing encryption key');
+        }
+        try {
+            const keyBuffer = Buffer.from(secretKey,'hex');
+            if(keyBuffer.length!==32){
+                throw new Error('Encryption key must be 32 bytes (64 hex characters)');
+            }
+            const algorithm = 'aes-256-cbc';
+            const iv = crypto.randomBytes(16);
+            const cipher = crypto.createCipheriv(algorithm,keyBuffer,iv);
+            let encrypted = cipher.update(wallet.privateKey,'utf8','hex');
+            encrypted+=cipher.final('hex');
 
-        await user.save();
-
+            const expirationMinutes = 15;
+            user.wallets.push({
+                tronAddress:wallet.address,
+                tronPrivateKey:`${iv.toString('hex')}:${encrypted}`,
+                hasPendingDeposit:true,
+                expectedAmount:Decimal128.fromString(amount.toString()),
+                expectedAmountExpiresAt:new Date(Date.now() + expirationMinutes * 60 * 1000),
+                used:false,
+            })
+            await user.save();
+            console.log(`✅ Saved TRON address for user ${telegramId}: ${wallet.address}`);
+            } 
+        catch (error) {
+            console.error(error)
+        }
+        const newWallet = user.wallets[user.wallets.length - 1];
         const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
         const redisKey1 = `generating_address${telegramId}`;
         const msg1 = await ctx2.reply(
-            `✅ Please send *${amount} USDT* to the following TRC20 address:\n\`\`\`${user.tronAddress}\`\`\`\n\nOnce received, your balance will be updated automatically.`,
+            `✅ Please send *${amount} USDT* to the following TRC20 address:\n\`\`\`${newWallet.tronAddress}\`\`\`\n\nOnce received, your balance will be updated automatically.`,
             { reply_markup: keyboard, parse_mode: 'Markdown' }
         );
         await redis.pushList(redisKey1, [String(msg1.message_id)]);

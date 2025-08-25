@@ -7,7 +7,8 @@ interface IUserWallet{
   expectedAmount: Types.Decimal128;
   expectedAmountExpiresAt?: Date;
   used:Boolean;
-  createdAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export interface IUser extends Document {
