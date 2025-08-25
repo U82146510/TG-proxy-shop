@@ -127,7 +127,13 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
             return;
         }
 
-
+        user.wallets.forEach(w => {
+            if (w.hasPendingDeposit) {
+                w.hasPendingDeposit = false;
+                w.used = true;
+            }
+        });
+        
         const wallet = await generateWallet();
         if (!wallet) {
             const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();

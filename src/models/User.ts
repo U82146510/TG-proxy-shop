@@ -1,6 +1,7 @@
 import { Schema, model, Document,Types } from "mongoose";
 
 interface IUserWallet{
+  _id?: Types.ObjectId;
   tronAddress: string;
   tronPrivateKey: string;
   hasPendingDeposit: boolean;

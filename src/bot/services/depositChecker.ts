@@ -25,62 +25,52 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
         } else {
             for (const user of users) {
                 try {
-                    if (!user.tronAddress) {
+                    if (user.wallets.length===0) {
                         console.log(`⚠️ User ${user.userId} has no TRON address`);
                         continue;
                     }
-
-                    const balance = await getUSDTbalance(user.tronAddress);
+                    const wallet = user.wallets[user.wallets.length-1];
+                    const balance = await getUSDTbalance(wallet.tronAddress);
                     if (balance === undefined || balance.isNaN()) {
                         console.log(`⏩ Skipping user ${user.userId} - invalid balance`);
                         continue;
                     }
 
-                    const expected = new Decimal(user.expectedAmount?.toString() || '0');
+                    const expected = new Decimal(wallet.expectedAmount?.toString() || '0');
                     const current = new Decimal(balance);
                     const tolerance = new Decimal(0.0001);
 
                     if (current.greaterThanOrEqualTo(expected.minus(tolerance))) {
                         // Update user balance
-                        const newBalance = new Decimal(user.balance.toString()).plus(current).toFixed(6);
-                        user.balance = Decimal128.fromString(newBalance.toString());
-                        user.hasPendingDeposit = false;
-                        user.expectedAmount = Decimal128.fromString("0");
-                        user.expectedAmountExpiresAt = undefined;
-                        await user.save();
+                        const newBalance = new Decimal(user.balance.toString()).plus(current);
+                        await User.updateOne(
+                        { _id: user._id, 'wallets._id': wallet._id },
+                        {   $inc: { balance: Decimal128.fromString(current.toString()) },
+                            $set: {
+                            'wallets.$.hasPendingDeposit': false,
+                            'wallets.$.used': true,
+                            'wallets.$.expectedAmount': Decimal128.fromString("0"),
+                            'wallets.$.expectedAmountExpiresAt': undefined
+                            }
+                        }
+                        );
 
-                        
-                     const shopTotalbalance = await shopBalance.findOneAndUpdate(
+                    const commision = current.mul(0.1).toDecimalPlaces(6);
+                    await shopBalance.findOneAndUpdate(
                         { key: 'shop-status' },
                         {
                             $setOnInsert: {
                                 Month: Decimal128.fromString("0"),
                                 Total: Decimal128.fromString("0"),
                                 shop: Decimal128.fromString("0")
+                            },
+                            $inc: {
+                                Month: Decimal128.fromString(current.toString()),
+                                Total: Decimal128.fromString(current.toString()),
+                                shop: Decimal128.fromString(commision.toString())
                             }
                         },
-                        { new: true, upsert: true }
-                    );
-
-                    const monthIncome = new Decimal(shopTotalbalance.Month.toString());
-                    const totalIncome = new Decimal(shopTotalbalance.Total.toString());
-                    const shopCommision = new Decimal(shopTotalbalance.shop.toString());
-
-                    const finalMonthIncome = monthIncome.plus(current);
-                    const finalTotalIncome = totalIncome.plus(current);
-                    const commision = current.mul(0.1);
-                    const finalShopCommision = shopCommision.plus(commision);
-
-                    await shopBalance.findOneAndUpdate(
-                        { key: 'shop-status' },
-                        {
-                            $set: {
-                                Month: Decimal128.fromString(finalMonthIncome.toString()),
-                                Total: Decimal128.fromString(finalTotalIncome.toString()),
-                                shop: Decimal128.fromString(finalShopCommision.toString())
-                            }
-                        },
-                        { new: true, upsert: true }
+                        { upsert: true, new: true }
                     );
 
                         // Notify user
@@ -102,25 +92,32 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
             }
         }
 
+        try {
+            const expiredUsers = await User.find({
+                hasPendingDeposit: true,
+                expectedAmountExpiresAt: { $lte: now }
+            });
 
-        const expiredUsers = await User.find({
-            hasPendingDeposit: true,
-            expectedAmountExpiresAt: { $lte: now }
-        });
+            for (const expiredUser of expiredUsers) {
+                const wallet = expiredUser.wallets[expiredUser.wallets.length-1];
+                wallet.hasPendingDeposit = false;
+                wallet.used = true;
+                wallet.expectedAmount = Decimal128.fromString("0");
+                wallet.expectedAmountExpiresAt = undefined;
+                await expiredUser.save();
 
-        for (const expiredUser of expiredUsers) {
-            expiredUser.hasPendingDeposit = false;
-            expiredUser.expectedAmount = Decimal128.fromString("0");
-            expiredUser.expectedAmountExpiresAt = undefined;
-            await expiredUser.save();
-
-            const expiredMSg = await bot.api.sendMessage(
-                expiredUser.userId,
-                '⚠️ Your deposit window expired. Please create a new deposit if you want to add balance.'
-            );
-            await redis.pushList(`deposit_expired_${expiredUser.userId}`,[String(expiredMSg.message_id)]);
-            console.log(`⌛ Cleared expired deposit for user ${expiredUser.userId}`);
+                const expiredMSg = await bot.api.sendMessage(
+                    expiredUser.userId,
+                    '⚠️ Your deposit window expired. Please create a new deposit if you want to add balance.'
+                );
+                await redis.pushList(`deposit_expired_${expiredUser.userId}`,[String(expiredMSg.message_id)]);
+                console.log(`⌛ Cleared expired deposit for user ${expiredUser.userId}`);
+            }
+        } catch (error) {
+            console.error('Error at removing expired payment orders',error);
         }
+
+        
     } catch (error) {
         console.error('💥 Deposit check failed:', error);
     }
