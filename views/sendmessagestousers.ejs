@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Password</title>
-    <link rel="stylesheet" href="/admin/updatepassword.css"/>
+    <title>Send Message</title>
+    <link rel="stylesheet" href="/admin/sendmessagestousers.css">
 </head>
 <body>
     <nav class="nav">
@@ -18,22 +18,14 @@
             <li><a href="/admin/logout">Logout</a></li>
         </ul>
     </nav>
-    <div class="update-password-container">
-        <h2>Update Admin Password</h2>
-        <form action="/admin/update" method="post">
-            <input type="text" name="username" placeholder="Username" required/>
-            <input type="password" name="password" placeholder="New Password" required/>
-            <button type="submit">Update</button>
+    <div class="send-message-container">
+        <h2>Send Message</h2>
+        <form action="/admin/sendmessage" method="post">
+            <input type="text" name="message" required>
+            <button type="submit">Send</button>
         </form>
-
-        <%if(message){%>
-            <p class="message"><%=message%></p>
-        <%}%>
-
-        <%if(error){%>
-            <p class="error"><%=error%></p>>
-        <%}%>
-
+        
     </div>
+
 </body>
 </html>
