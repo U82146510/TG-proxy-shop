@@ -15,16 +15,22 @@
             <li><a href="/admin/product">Products</a></li>
             <li><a href="/admin/statistics">Statistics</a></li>
             <li><a href="/admin/update">Settings</a></li>
+            <li><a href="/admin/sendmessage">Send Message</a></li>
             <li><a href="/admin/logout">Logout</a></li>
         </ul>
     </nav>
     <div class="send-message-container">
         <h2>Send Message</h2>
         <form action="/admin/sendmessage" method="post">
-            <input type="text" name="message" required>
+            <textarea name="message" required placeholder="Enter your message here..."></textarea>
             <button type="submit">Send</button>
         </form>
-        
+        <%if(message){%>
+            <p class="message"><%=message%></p>
+        <%}%>
+        <%if(error){%>
+            <p class="error"><%=error%></p>
+        <%}%>
     </div>
 
 </body>

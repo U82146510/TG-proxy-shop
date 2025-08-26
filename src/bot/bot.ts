@@ -29,7 +29,7 @@ if(!bot_token){
     throw new Error('missing telegram token')
 };
 
-const bot:Bot<Context,Api>  = new Bot(bot_token);
+export const bot:Bot<Context,Api>  = new Bot(bot_token);
 
 
 const start = async()=>{
