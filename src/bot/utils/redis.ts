@@ -1,5 +1,4 @@
 import { createClient,type RedisClientType } from "redis";
-import dotenv from 'dotenv';
 
 type RedisConfig = {
     host:string;
