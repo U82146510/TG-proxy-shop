@@ -37,7 +37,7 @@ export function registerBalanceMenu(bot:Bot<Context>){
             }
 
             const keyboard = new InlineKeyboard()
-                .text('➕ Add Balance', 'add_balance').row()
+                .text('➕ Add Balance', 'deposit_crypto').row()
                 .text('🏠 Main Menu', 'back_to_menu').row();
 
             const formattedBalance = new Intl.NumberFormat('en-US', {
@@ -61,32 +61,56 @@ export function registerBalanceMenu(bot:Bot<Context>){
     });
     
 
-bot.callbackQuery('add_balance', async (ctx: Context) => {
-    await ctx.answerCallbackQuery();
-    const telegramId = ctx.from?.id;
-    if (!telegramId) return;
+    bot.callbackQuery('deposit_crypto',async(ctx:Context)=>{
+        await ctx.answerCallbackQuery();
+        const telegramId = ctx.from?.id;
+        if (!telegramId) {
+            return;
+        }
+        try {
+            await deleteCachedMessages(ctx, `user_balance${telegramId}`);
+            const keyboard = new InlineKeyboard()
+            .text('USDT', 'deposit_USDT').row()
+            .text('TRX', 'deposit_TRX').row()
+            .text('🏠 Main Menu', 'back_to_menu').row()
 
-    try {
-        await deleteCachedMessages(ctx, `user_balance${telegramId}`);
-        const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
-        const redisKey = `inpurt_balance${telegramId}`;
-        const msg = await ctx.reply(
-            '💰 *Enter the amount of USDT you want to deposit:*\n\n' +
-            '⚠️ *Important:* Only the *last generated deposit request* will be accepted.\n' +
-            'If you create a new one before paying the previous one, the earlier one will be ignored.\n\n' +
-            '✅ After sending the exact amount, please *wait for confirmation*.\n\n' +
-            '⏳ Deposit window is valid for 15 minutes.',
-            {
-               reply_markup:keyboard, parse_mode: 'Markdown',
-            }
-        );
+            const redisKey = `deposit_crypto${telegramId}`;
+            const msg = await ctx.reply(`Choose Crypto:`,{
+                reply_markup:keyboard
+            });
+            await redis.pushList(redisKey,[String(msg.message_id)]);
+        } catch (error) {
+            console.error(error);
+            await ctx.reply('⚠️ Error choosing crypto type.');
+        }
+    });
 
-        await redis.pushList(redisKey, [String(msg.message_id)]);
-        await redis.set(`state:${telegramId}`, 'awaiting_deposit_amount');
-    } catch (error) {
-        console.error(error);
-    }
-});
+    bot.callbackQuery(/deposit_(.+)/, async (ctx: Context) => {
+        await ctx.answerCallbackQuery();
+        const telegramId = ctx.from?.id;
+        if (!telegramId) return;
+        const [_,cryptoType] = ctx.match ?? [];
+        try {
+            await deleteCachedMessages(ctx,`deposit_crypto${telegramId}`);
+            const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
+            const redisKey = `input_balance${telegramId}`;
+            const msg = await ctx.reply(
+                '💰 *Enter the amount of USDT you want to deposit:*\n\n' +
+                '⚠️ *Important:* Only the *last generated deposit request* will be accepted.\n' +
+                'If you create a new one before paying the previous one, the earlier one will be ignored.\n\n' +
+                '✅ After sending the exact amount, please *wait for confirmation*.\n\n' +
+                '⏳ Deposit window is valid for 15 minutes.',
+                {
+                reply_markup:keyboard, parse_mode: 'Markdown',
+                }
+            );
+
+            await redis.pushList(redisKey, [String(msg.message_id)]);
+            await redis.set(`state:${telegramId}`, `awaiting_deposit_amount_${cryptoType}`);
+        } catch (error) {
+            console.error(error);
+        }
+    });
 
 
 
@@ -94,15 +118,17 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
         const telegramId = ctx2.from?.id;
         if (!telegramId) return;
 
-        await deleteCachedMessages(ctx2, `inpurt_balance${telegramId}`);
+        await deleteCachedMessages(ctx2, `input_balance${telegramId}`);
         const state = await redis.get(`state:${telegramId}`);
-        if (state !== 'awaiting_deposit_amount') return;
+        if (!(state === 'awaiting_deposit_amount_USDT' || state === 'awaiting_deposit_amount_TRX')) {
+            return;
+        }
 
         const input = ctx2.message?.text?.trim();
         if (!input) {
             return;
         }
-
+        const cryptoType = state.split("_")[3] as "USDT"|"TRX";
         const amount = Number(input);
         if (isNaN(amount) || amount <= 0) {
             const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
@@ -166,6 +192,7 @@ bot.callbackQuery('add_balance', async (ctx: Context) => {
                 hasPendingDeposit:true,
                 expectedAmount:Decimal128.fromString(amount.toString()),
                 expectedAmountExpiresAt:new Date(Date.now() + expirationMinutes * 60 * 1000),
+                currency:cryptoType,
                 used:false,
             })
             await user.save();

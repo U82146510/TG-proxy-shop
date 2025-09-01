@@ -1,4 +1,4 @@
-import { getUSDTbalance } from './udtPayment.ts';
+import { getUSDTbalance,getTRXbalance } from './udtPayment.ts';
 import { Decimal } from 'decimal.js';
 import { User } from '../../models/User.ts';
 import { Bot, Context } from 'grammy';
@@ -26,7 +26,14 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         if (!wallet.hasPendingDeposit) continue;
                         if (!wallet.expectedAmountExpiresAt || wallet.expectedAmountExpiresAt <= now) continue;
 
-                        const balance = await getUSDTbalance(wallet.tronAddress);
+                        let balance: Decimal | undefined;
+
+                        if (wallet.currency === 'USDT') {
+                        balance = await getUSDTbalance(wallet.tronAddress);
+                        } else if (wallet.currency === 'TRX') {
+                        balance = await getTRXbalance(wallet.tronAddress);
+                        }
+
                         if (!balance || balance.isNaN()) {
                             console.log(`⏩ Skipping user ${user.userId} - invalid balance`);
                             continue;
@@ -37,7 +44,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         const tolerance = new Decimal(0.0001);
 
                         // LOG pending deposits
-                        console.log(`⏳ Pending payment: User ${user.userId}, Expected ${expected.toFixed(6)}, Current ${current.toFixed(6)} USDT`);
+                        console.log(`⏳ Pending payment: User ${user.userId}, Expected ${expected.toFixed(6)}, Current ${current.toFixed(6)} ${wallet.currency}`);
 
                         if (current.greaterThanOrEqualTo(expected.minus(tolerance))) {
                             // Update user balance

@@ -65,7 +65,21 @@ export async function getUSDTbalance(address: string): Promise<Decimal | undefin
     });
     return undefined;
   }
-}
+};
+
+export async function getTRXbalance(address:string):Promise<Decimal|undefined>{
+  try {
+    if(!tronWeb.isAddress(address)){
+      console.error('Invalid Tron address:',address);
+      return undefined;
+    }
+    const balance = await tronWeb.trx.getBalance(address);
+    return new Decimal(balance).div(1e6);
+  } catch (error) {
+    console.error('Error fetching TRC balance:',{error:error instanceof Error,address:address});
+    return undefined;
+  }
+};
 
 
 async function checkConnection() {
