@@ -29,9 +29,9 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         let balance: Decimal | undefined;
 
                         if (wallet.currency === 'USDT') {
-                        balance = await getUSDTbalance(wallet.tronAddress);
+                            balance = await getUSDTbalance(wallet.tronAddress);
                         } else if (wallet.currency === 'TRX') {
-                        balance = await getTRXbalance(wallet.tronAddress);
+                            balance = await getTRXbalance(wallet.tronAddress);
                         }
 
                         if (!balance || balance.isNaN()) {
@@ -72,9 +72,9 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                                         shop: Decimal128.fromString("0")
                                     },
                                     $inc: {
-                                        Month: Decimal128.fromString(current.toString()),
-                                        Total: Decimal128.fromString(current.toString()),
-                                        shop: Decimal128.fromString(commission.toString())
+                                        Month: Number(current.toString()),
+                                        Total: Number(current.toString()),
+                                        shop: Number(commission.toString())
                                     }
                                 },
                                 { upsert: true, new: true }
