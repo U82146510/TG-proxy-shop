@@ -13,7 +13,15 @@ const Decimal128 = mongoose.Types.Decimal128;
 
 export function orderHandler(bot: Bot<Context>) {
     bot.callbackQuery('my_orders', async (ctx: Context) => {
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if (!telegramId) {
             return;
@@ -83,7 +91,15 @@ export function orderHandler(bot: Bot<Context>) {
     });
 
     bot.callbackQuery(/extend_order_(.+)/,async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if(!telegramId){
             return;
@@ -112,7 +128,15 @@ export function orderHandler(bot: Bot<Context>) {
         }
     });
     bot.callbackQuery(/period_(.+)_(.+)/, async (ctx: Context) => {
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         const [_, orderId, period] = ctx.match ?? [];
 
