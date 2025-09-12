@@ -21,7 +21,15 @@ if(envResult.error){
 
 export function registerBalanceMenu(bot:Bot<Context>){
     bot.callbackQuery('my_balance', async (ctx: Context) => {
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if (!telegramId) {
             return;
@@ -62,7 +70,15 @@ export function registerBalanceMenu(bot:Bot<Context>){
     
 
     bot.callbackQuery('deposit_crypto',async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if (!telegramId) {
             return;
@@ -86,7 +102,15 @@ export function registerBalanceMenu(bot:Bot<Context>){
     });
 
     bot.callbackQuery(/deposit_(.+)/, async (ctx: Context) => {
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if (!telegramId) return;
         const [_,cryptoType] = ctx.match ?? [];
