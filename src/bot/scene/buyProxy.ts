@@ -14,7 +14,15 @@ const Decimal128 = mongoose.Types.Decimal128;
 
 export function registerBuyProxyHandler(bot:Bot<Context>){
     bot.callbackQuery('buy_proxy',async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if(!telegramId){
             return;
@@ -57,7 +65,15 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
 
 
     bot.callbackQuery(/^country_(.+)/,async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if(!telegramId){
             return;
@@ -113,7 +129,15 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
     });
 
     bot.callbackQuery(/operator_(.+)_(.+)/,async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if(!telegramId){
             return;
@@ -151,8 +175,16 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
     });
 
     bot.callbackQuery(/period_(.+)_(.+)_(.+)_(.+)/, async (ctx: Context) => {
-        await ctx.answerCallbackQuery();
-         const telegramId = ctx.from?.id;
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
+        const telegramId = ctx.from?.id;
         if (!telegramId) return;
 
         const [_, countryName, ispName, eid, period] = ctx.match ?? [];
@@ -195,7 +227,15 @@ export function registerBuyProxyHandler(bot:Bot<Context>){
     });
 
     bot.callbackQuery(/checkout_(.+)_(.+)_(.+)/,async(ctx:Context)=>{
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         const [_,eid, period,ispName] = ctx.match ?? [];
         if(!telegramId){
