@@ -54,4 +54,12 @@ const start = async()=>{
     }
 };
 
+bot.catch((err) => {
+  console.error("💥 Bot error:", err);
+  if ("ctx" in err) {
+    console.error("Context update:", err.ctx.update);
+  }
+});
+
+
 start();
