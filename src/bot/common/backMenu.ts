@@ -5,7 +5,15 @@ import { redis } from '../utils/redis.ts';
 
 export function backToMainMenu(bot: Bot<Context>) {
     bot.callbackQuery('back_to_menu', async (ctx: Context) => {
-        await ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
 
         const telegramId = ctx.from?.id;
         if (!telegramId) return;
