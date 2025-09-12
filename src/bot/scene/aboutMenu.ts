@@ -4,7 +4,15 @@ import { deleteCachedMessages } from '../utils/cleanup.ts';
 
 export function registerAboutMenu(bot: Bot<Context>): void {
     bot.callbackQuery('about', async (ctx: Context) => {
-        ctx.answerCallbackQuery();
+        try {
+            await ctx.answerCallbackQuery();
+        } catch (error:any) {
+            if(error?.response?.description?.includes("query is too old")){
+                console.log("⚠️ Callback query already answered, skipping...");
+            }else{
+                throw error;
+            }
+        }
         const telegramId = ctx.from?.id;
         if (!telegramId) return;
 
