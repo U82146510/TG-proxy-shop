@@ -125,3 +125,5 @@ class RedisClient {
         return this.client;
     }
 };
+
+export const redis = new RedisClient();
