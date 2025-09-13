@@ -1,5 +1,5 @@
 import { Context } from "grammy";
-import { redis } from "./redis.ts";
+import { redis } from "./redis";
 
 export async function deleteCachedMessages(ctx: Context, redisKey: string) {
   try {

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {sendmessageGet,sendmessagePost} from '../controllers/sendMessageController.ts';
-import { protectRoute } from "../middleware/protectRoute.ts";
+import {sendmessageGet,sendmessagePost} from '../controllers/sendMessageController';
+import { protectRoute } from "../middleware/protectRoute";
 
 export const sendMsgRoute:Router = Router();
 

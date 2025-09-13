@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import { z } from 'zod';
-import { Auth, type IAuth } from '../../models/adminPanel.ts';
+import { Auth, type IAuth } from '../../models/adminPanel';
 import bcrypt from 'bcryptjs';
 
 const DUMMY_HASH = '$2a$12$C6UzMDM.H6dfI/f/IKcEeO5KfUdiW.SiV3X2XnFk4Ltp0jJX61ZxW';

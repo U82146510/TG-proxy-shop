@@ -1,14 +1,14 @@
 import { Bot,Context,InlineKeyboard } from "grammy";
-import {redis} from '../utils/redis.ts';
-import {deleteCachedMessages} from '../utils/cleanup.ts';
-import { Product } from "../../models/Products.ts";
-import { getProxy ,type Proxy} from '../fetch.ts'
-import {User} from '../../models/User.ts';
-import {Order} from '../../models/Orders.ts';
+import {redis} from '../utils/redis';
+import {deleteCachedMessages} from '../utils/cleanup';
+import { Product } from "../../models/Products";
+import { getProxy ,type Proxy} from '../fetch'
+import {User} from '../../models/User';
+import {Order} from '../../models/Orders';
 import {Decimal} from "decimal.js";
 import { Schema } from "mongoose";
 import {format, addDays } from 'date-fns';
-import {fetchProxy} from '../utils/buyProxy.ts';
+import {fetchProxy} from '../utils/buyProxy';
 import mongoose from "mongoose";
 const Decimal128 = mongoose.Types.Decimal128;
 

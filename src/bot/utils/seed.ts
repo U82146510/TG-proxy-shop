@@ -1,4 +1,4 @@
-import {Auth} from '../../models/adminPanel.ts';
+import {Auth} from '../../models/adminPanel';
 
 export async function creteAdmin():Promise<void>{
     try {

@@ -1,17 +1,13 @@
 import { Bot,Context,InlineKeyboard } from "grammy";
-import {redis} from '../utils/redis.ts';
-import {deleteCachedMessages} from '../utils/cleanup.ts';
-import { User } from "../../models/User.ts";
-import { generateWallet } from "../services/udtPayment.ts";
+import {redis} from '../utils/redis';
+import {deleteCachedMessages} from '../utils/cleanup';
+import { User } from "../../models/User";
+import { generateWallet } from "../services/udtPayment";
 import crypto from 'crypto';
 import dotnev from 'dotenv';
-import { fileURLToPath } from "url";
 import path from "path";
 import mongoose from "mongoose";
 const Decimal128 = mongoose.Types.Decimal128; 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const envPath = path.resolve(__dirname,'../../../.env');
 const envResult = dotnev.config({path:envPath});
@@ -68,40 +64,7 @@ export function registerBalanceMenu(bot:Bot<Context>){
         }
     });
     
-
-    bot.callbackQuery('deposit_crypto',async(ctx:Context)=>{
-        try {
-            await ctx.answerCallbackQuery();
-        } catch (error:any) {
-            if(error?.response?.description?.includes("query is too old")){
-                console.log("⚠️ Callback query already answered, skipping...");
-            }else{
-                throw error;
-            }
-        }
-        const telegramId = ctx.from?.id;
-        if (!telegramId) {
-            return;
-        }
-        try {
-            await deleteCachedMessages(ctx, `user_balance${telegramId}`);
-            const keyboard = new InlineKeyboard()
-            .text('USDT', 'deposit_USDT').row()
-            .text('TRX', 'deposit_TRX').row()
-            .text('🏠 Main Menu', 'back_to_menu').row()
-
-            const redisKey = `deposit_crypto${telegramId}`;
-            const msg = await ctx.reply(`Choose Crypto:`,{
-                reply_markup:keyboard
-            });
-            await redis.pushList(redisKey,[String(msg.message_id)]);
-        } catch (error) {
-            console.error(error);
-            await ctx.reply('⚠️ Error choosing crypto type.');
-        }
-    });
-
-    bot.callbackQuery(/deposit_(.+)/, async (ctx: Context) => {
+    bot.callbackQuery("deposit_crypto", async (ctx: Context) => {
         try {
             await ctx.answerCallbackQuery();
         } catch (error:any) {
@@ -113,9 +76,9 @@ export function registerBalanceMenu(bot:Bot<Context>){
         }
         const telegramId = ctx.from?.id;
         if (!telegramId) return;
-        const [_,cryptoType] = ctx.match ?? [];
+        
         try {
-            await deleteCachedMessages(ctx,`deposit_crypto${telegramId}`);
+            await deleteCachedMessages(ctx,`user_balance${telegramId}`);
             const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
             const redisKey = `input_balance${telegramId}`;
             const msg = await ctx.reply(
@@ -130,7 +93,7 @@ export function registerBalanceMenu(bot:Bot<Context>){
             );
 
             await redis.pushList(redisKey, [String(msg.message_id)]);
-            await redis.set(`state:${telegramId}`, `awaiting_deposit_amount_${cryptoType}`);
+            await redis.set(`state:${telegramId}`, `awaiting_deposit_amount`);
         } catch (error) {
             console.error(error);
         }
@@ -144,7 +107,7 @@ export function registerBalanceMenu(bot:Bot<Context>){
 
         await deleteCachedMessages(ctx2, `input_balance${telegramId}`);
         const state = await redis.get(`state:${telegramId}`);
-        if (!(state === 'awaiting_deposit_amount_USDT' || state === 'awaiting_deposit_amount_TRX')) {
+        if (state !== "awaiting_deposit_amount") {
             return;
         }
 
@@ -152,7 +115,7 @@ export function registerBalanceMenu(bot:Bot<Context>){
         if (!input) {
             return;
         }
-        const cryptoType = state.split("_")[3] as "USDT"|"TRX";
+
         const amount = Number(input);
         if (isNaN(amount) || amount <= 0) {
             const keyboard = new InlineKeyboard().text('🏠 Main Menu', 'back_to_menu').row();
@@ -216,7 +179,6 @@ export function registerBalanceMenu(bot:Bot<Context>){
                 hasPendingDeposit:true,
                 expectedAmount:Decimal128.fromString(amount.toString()),
                 expectedAmountExpiresAt:new Date(Date.now() + expirationMinutes * 60 * 1000),
-                currency:cryptoType,
                 used:false,
             })
             await user.save();

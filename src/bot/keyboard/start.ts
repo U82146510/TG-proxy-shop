@@ -1,6 +1,6 @@
 import { Bot, Context, InlineKeyboard } from 'grammy';
-import { redis } from '../utils/redis.ts';
-import { User } from '../../models/User.ts';
+import { redis } from '../utils/redis';
+import { User } from '../../models/User';
 
 export function registerMainMenu(bot: Bot<Context>) {
     bot.command("start", async (ctx: Context) => {

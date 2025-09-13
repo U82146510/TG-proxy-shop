@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import {deleteExpiredOrders} from '../utils/returnProxybackToSale.ts';
+import {deleteExpiredOrders} from '../utils/returnProxybackToSale';
 
 export function deleteOrderAndReturnBackToSaleProxy():void{
     cron.schedule('*/10 * * * *',async()=>{

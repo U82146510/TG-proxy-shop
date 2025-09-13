@@ -1,5 +1,5 @@
 import { type Request,type Response,type NextFunction } from "express";
-import {shopBalance} from '../../models/shopBalance.ts';
+import {shopBalance} from '../../models/shopBalance';
 
 export const incomeStatistics = async(req:Request,res:Response,next:NextFunction)=>{
     try {

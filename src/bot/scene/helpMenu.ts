@@ -1,6 +1,6 @@
 import { Bot, Context, InlineKeyboard } from "grammy";
-import { redis } from '../utils/redis.ts';
-import { deleteCachedMessages } from '../utils/cleanup.ts';
+import { redis } from '../utils/redis';
+import { deleteCachedMessages } from '../utils/cleanup';
 
 export function helpMenu(bot: Bot<Context>): void {
     bot.callbackQuery('my_help', async (ctx: Context) => {

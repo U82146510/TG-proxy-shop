@@ -1,5 +1,5 @@
-import {Order} from '../../models/Orders.ts';
-import {canBuyOff} from '../utils/buyProxy.ts';
+import {Order} from '../../models/Orders';
+import {canBuyOff} from '../utils/buyProxy';
 
 export async function deleteExpiredOrders():Promise<void>{
     try {

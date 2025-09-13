@@ -1,8 +1,8 @@
 import { type Request,type Response,type NextFunction } from "express";
 import {z} from 'zod';
-import { User } from "../../models/User.ts";
-import {sendMsg} from '../utils/sendMessage.ts';
-import {bot} from '../../bot/bot.ts';
+import { User } from "../../models/User";
+import {sendMsg} from '../utils/sendMessage';
+import {bot} from '../../bot/bot';
 
 const sendMessageSchema = z.object({
     message:z.string()

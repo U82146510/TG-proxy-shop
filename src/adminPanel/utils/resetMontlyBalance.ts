@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import {shopBalance} from '../../models/shopBalance.ts';
+import {shopBalance} from '../../models/shopBalance';
 
 export function resetBalanceEveryMonth():void{
     cron.schedule('0 0 1 * *',async()=>{

@@ -1,12 +1,8 @@
 import mongoose from "mongoose";
 import dotnev from 'dotenv';
-import { fileURLToPath } from "url";
 import path from "path";
 import { error} from "console";
-import {creteAdmin} from '../bot/utils/seed.ts';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import {creteAdmin} from '../bot/utils/seed';
 
 dotnev.config({
     path:path.resolve(__dirname,"../../.env")

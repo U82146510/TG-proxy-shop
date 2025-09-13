@@ -1,24 +1,21 @@
 import { Bot,Api,Context } from "grammy";
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from "url";
-import {registerMainMenu} from './keyboard/start.ts';
-import {registerBuyProxyHandler} from './scene/buyProxy.ts';
-import {redis} from './utils/redis.ts';
-import {backToMainMenu} from './common/backMenu.ts';
-import {connect_db} from '../config/connectDB.ts';
-import {orderHandler} from '../bot/scene/orders.ts';
-import {registerBalanceMenu} from './scene/myBalance.ts';
-import {startDepositChecker} from './job/depositChecker.ts';
-import {registerAboutMenu} from './scene/aboutMenu.ts';
-import {helpMenu} from './scene/helpMenu.ts';
-import {startAdminPanel} from '../adminPanel/app.ts';
-import {resetBalanceEveryMonth} from '../adminPanel/utils/resetMontlyBalance.ts';
-import {deleteOrderAndReturnBackToSaleProxy} from './job/deleteOrderChecker.ts';
-import {myInfoMenu} from './scene/myInfo.ts';
+import {registerMainMenu} from './keyboard/start';
+import {registerBuyProxyHandler} from './scene/buyProxy';
+import {redis} from './utils/redis';
+import {backToMainMenu} from './common/backMenu';
+import {connect_db} from '../config/connectDB';
+import {orderHandler} from '../bot/scene/orders';
+import {registerBalanceMenu} from './scene/myBalance';
+import {startDepositChecker} from './job/depositChecker';
+import {registerAboutMenu} from './scene/aboutMenu';
+import {helpMenu} from './scene/helpMenu';
+import {startAdminPanel} from '../adminPanel/app';
+import {resetBalanceEveryMonth} from '../adminPanel/utils/resetMontlyBalance';
+import {deleteOrderAndReturnBackToSaleProxy} from './job/deleteOrderChecker';
+import {myInfoMenu} from './scene/myInfo';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config({
     path:path.resolve(__dirname,'../../.env')

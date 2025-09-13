@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { checkForDeposits } from '../services/depositChecker.ts';
+import { checkForDeposits } from '../services/depositChecker';
 import { Bot} from "grammy";
 export function startDepositChecker(bot:Bot){
     cron.schedule('*/30 * * * * *', async () => {

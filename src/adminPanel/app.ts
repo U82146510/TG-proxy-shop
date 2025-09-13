@@ -6,17 +6,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
-import {loginRouter} from './routes/loginRoute.ts';
-import { updateRouter } from "./routes/updatePasswordRoute.ts";
-import {productRouter} from './routes/productRoute.ts';
-import {userRouter} from './routes/userRoute.ts';
-import {incomeStatistic} from './routes/monthIncomeRoute.ts';
+import {loginRouter} from './routes/loginRoute';
+import { updateRouter } from "./routes/updatePasswordRoute";
+import {productRouter} from './routes/productRoute';
+import {userRouter} from './routes/userRoute';
+import {incomeStatistic} from './routes/monthIncomeRoute';
 import methodOverride from 'method-override';
-import {logoutRoute} from './routes/logoutRoute.ts';
-import {sendMsgRoute} from './routes/sendMessageRoute.ts';
+import {logoutRoute} from './routes/logoutRoute';
+import {sendMsgRoute} from './routes/sendMessageRoute';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config({path:path.resolve(__dirname,'../../.env')});
 const connect_db = process.env.atlas;

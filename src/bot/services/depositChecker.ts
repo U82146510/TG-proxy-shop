@@ -1,9 +1,9 @@
-import { getUSDTbalance,getTRXbalance } from './udtPayment.ts';
+import { getUSDTbalance } from './udtPayment';
 import { Decimal } from 'decimal.js';
-import { User } from '../../models/User.ts';
+import { User } from '../../models/User';
 import { Bot, Context } from 'grammy';
-import { redis } from '../utils/redis.ts';
-import { shopBalance } from '../../models/shopBalance.ts';
+import { redis } from '../utils/redis';
+import { shopBalance } from '../../models/shopBalance';
 import mongoose from 'mongoose';
 const Decimal128 = mongoose.Types.Decimal128;
 
@@ -26,14 +26,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         if (!wallet.hasPendingDeposit) continue;
                         if (!wallet.expectedAmountExpiresAt || wallet.expectedAmountExpiresAt <= now) continue;
 
-                        let balance: Decimal | undefined;
-
-                        if (wallet.currency === 'USDT') {
-                            balance = await getUSDTbalance(wallet.tronAddress);
-                        } else if (wallet.currency === 'TRX') {
-                            balance = await getTRXbalance(wallet.tronAddress);
-                        }
-
+                        const balance = await getUSDTbalance(wallet.tronAddress);
                         if (!balance || balance.isNaN()) {
                             console.log(`⏩ Skipping user ${user.userId} - invalid balance`);
                             continue;
@@ -44,7 +37,7 @@ export async function checkForDeposits(bot: Bot<Context>): Promise<void> {
                         const tolerance = new Decimal(0.0001);
 
                         // LOG pending deposits
-                        console.log(`⏳ Pending payment: User ${user.userId}, Expected ${expected.toFixed(6)}, Current ${current.toFixed(6)} ${wallet.currency}`);
+                        console.log(`⏳ Pending payment: User ${user.userId}, Expected ${expected.toFixed(6)}, Current ${current.toFixed(6)} USDT`);
 
                         if (current.greaterThanOrEqualTo(expected.minus(tolerance))) {
                             // Update user balance

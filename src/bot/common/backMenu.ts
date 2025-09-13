@@ -1,7 +1,7 @@
 import { Bot, Context, InlineKeyboard } from "grammy";
-import { mainMenu } from '../keyboard/start.ts';
-import { deleteCachedMessages } from "../utils/cleanup.ts";
-import { redis } from '../utils/redis.ts';
+import { mainMenu } from '../keyboard/start';
+import { deleteCachedMessages } from "../utils/cleanup";
+import { redis } from '../utils/redis';
 
 export function backToMainMenu(bot: Bot<Context>) {
     bot.callbackQuery('back_to_menu', async (ctx: Context) => {

@@ -1,6 +1,6 @@
 import {type Request,type Response,type NextFunction} from 'express';
 import {z} from 'zod';
-import { Auth} from '../../models/adminPanel.ts';
+import { Auth} from '../../models/adminPanel';
 
 
 const userSchema  = z.object({

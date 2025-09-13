@@ -1,5 +1,5 @@
 import { type Request,type Response,type NextFunction } from "express";
-import {Product} from '../../models/Products.ts';
+import {Product} from '../../models/Products';
 import {z} from 'zod';
 
 const schemaProduct = z.object({

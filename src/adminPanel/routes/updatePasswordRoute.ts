@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {update,updateGet} from '../controllers/updatePasswordController.ts';
-import {protectRoute} from '../middleware/protectRoute.ts';
+import {update,updateGet} from '../controllers/updatePasswordController';
+import {protectRoute} from '../middleware/protectRoute';
 
 export const updateRouter:Router = Router();
 

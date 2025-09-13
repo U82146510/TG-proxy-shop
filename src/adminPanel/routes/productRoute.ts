@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {createProduct,deleteProduct,updateProduct,productGet} from '../controllers/productController.ts';
-import {protectRoute} from '../middleware/protectRoute.ts';
+import {createProduct,deleteProduct,updateProduct,productGet} from '../controllers/productController';
+import {protectRoute} from '../middleware/protectRoute';
 
 export const productRouter:Router = Router();
 

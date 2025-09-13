@@ -8,7 +8,6 @@ interface IUserWallet{
   expectedAmount: Types.Decimal128;
   expectedAmountExpiresAt?: Date;
   used:Boolean;
-  currency:'USDT' | 'TRX';
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -26,8 +25,7 @@ const walletSchema = new Schema<IUserWallet>({
   hasPendingDeposit: { type: Boolean, default: false },
   expectedAmount: { type: Schema.Types.Decimal128, default: Types.Decimal128.fromString("0") },
   expectedAmountExpiresAt: { type: Date },
-  used:{type:Boolean,default:false},
-  currency:{type:String,enume:['USDT','TRX'],required:true}
+  used:{type:Boolean,default:false}
 },{timestamps:true});
 
 const userSchema = new Schema<IUser>({

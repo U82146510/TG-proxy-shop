@@ -1,5 +1,5 @@
 import { type Request,type Response,type NextFunction } from "express";
-import {User} from '../../models/User.ts';
+import {User} from '../../models/User';
 import {z} from 'zod';
 
 const schemaUser = z.object({
