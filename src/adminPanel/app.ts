@@ -4,7 +4,6 @@ import rateLimit from 'express-rate-limit';
 import MongoStore from 'connect-mongo'
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 import {loginRouter} from './routes/loginRoute';
 import { updateRouter } from "./routes/updatePasswordRoute";
@@ -14,6 +13,8 @@ import {incomeStatistic} from './routes/monthIncomeRoute';
 import methodOverride from 'method-override';
 import {logoutRoute} from './routes/logoutRoute';
 import {sendMsgRoute} from './routes/sendMessageRoute';
+import https from 'https';
+import fs from 'fs';
 
 
 dotenv.config({path:path.resolve(__dirname,'../../.env')});
@@ -27,12 +28,19 @@ if(!secretKey){
     throw new Error('missing secret key ');
 }
 
+
 const app:Application = express();
 const port:3000=3000;
 
+
+const options = {
+    key: fs.readFileSync(path.join(__dirname, '../../key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '../../cert.pem'))
+};
+
 app.use(helmet({
     hsts:false
-}))
+}));
 
 app.disable('x-powered-by');
 app.disable('etag');
@@ -91,9 +99,11 @@ app.use((req:Request,res:Response,next:NextFunction)=>{
 
 export const startAdminPanel = async()=>{
     try {
-        app.listen(3000,()=>console.log("Admin Panel"))
+        https.createServer(options, app).listen(3000, () => {
+            console.log("Admin Panel running with HTTPS on port 3000");
+        });
+
     } catch (error) {
         console.error(error);
     }
 };
-
