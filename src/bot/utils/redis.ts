@@ -1,4 +1,7 @@
 import { createClient,type RedisClientType } from "redis";
+import dotenv from 'dotenv';
+import path from 'path';
+
 
 type RedisConfig = {
     host:string;
@@ -7,6 +10,19 @@ type RedisConfig = {
     maxRetries?:number;
     retryDelays:number;
 };
+
+
+dotenv.config({path:path.resolve(__dirname,'../../../.env')});
+const connect_db = process.env.atlas;
+if(!connect_db){
+    throw new Error('missing atlas connection in the app.ts');
+}
+
+const redisPass = process.env.redisPassword;
+
+if(!redisPass){
+    throw new Error('missing redis password')
+}
 
 
 class RedisClient {
@@ -19,6 +35,7 @@ class RedisClient {
             port:6379,
             maxRetries:5,
             retryDelays:5000,
+            password:redisPass,
             ...config
         };
         this.client = createClient({
@@ -108,5 +125,3 @@ class RedisClient {
         return this.client;
     }
 };
-
-export const redis = new RedisClient();
