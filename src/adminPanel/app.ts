@@ -30,7 +30,7 @@ if(!secretKey){
 
 
 const app:Application = express();
-const port:3000=3000;
+
 
 
 const options = {
@@ -107,3 +107,5 @@ export const startAdminPanel = async()=>{
         console.error(error);
     }
 };
+
+
